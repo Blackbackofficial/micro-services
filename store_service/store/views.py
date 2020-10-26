@@ -21,6 +21,7 @@ def validUser(user_uid):
 def get_orders(request, user_uid):
     if request.method == 'GET':
         if validUser(user_uid):
+            # Логика
             store = Store.objects.all()
             serializer = StoreSerializer(store, many=True)
             # r = requests.get('https://peaceful-shelf-78026.herokuapp.com/persons')
@@ -37,6 +38,7 @@ def get_orders(request, user_uid):
 def buy_order(request, user_uid):
     if request.method == 'POST':
         if validUser(user_uid):
+            # Логика
             store = JSONParser().parse(request)
             store = store
         else:
@@ -45,6 +47,45 @@ def buy_order(request, user_uid):
     else:
         return JsonResponse('', status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
-    # def post(self, request, user_uid, user):
-    #     store = JSONParser().parse(request)
-    #     store = store
+
+@api_view(['GET'])
+def get_order(request, user_uid, order_uid):
+    if request.method == 'GET':
+        if validUser(user_uid):
+            # Логика
+            store = JSONParser().parse(request)
+            store = store
+        else:
+            return JsonResponse({'message': 'The tutorial does not exist or No Content'},
+                                status=status.HTTP_404_NOT_FOUND)
+    else:
+        return JsonResponse('', status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+@api_view(['POST'])
+def get_order_warranty(request, user_uid, order_uid):
+    if request.method == 'POST':
+        if validUser(user_uid):
+            # Логика
+            store = JSONParser().parse(request)
+            store = store
+        else:
+            return JsonResponse({'message': 'The tutorial does not exist or No Content'},
+                                status=status.HTTP_404_NOT_FOUND)
+    else:
+        return JsonResponse('', status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+# Только метод DELETE
+@api_view(['POST'])
+def get_order_refund(request, user_uid, order_uid):
+    if request.method == 'POST':
+        if validUser(user_uid):
+            # Логика
+            store = JSONParser().parse(request)
+            store = store
+        else:
+            return JsonResponse({'message': 'The tutorial does not exist or No Content'},
+                                status=status.HTTP_404_NOT_FOUND)
+    else:
+        return JsonResponse('', status=status.HTTP_405_METHOD_NOT_ALLOWED)
