@@ -39,8 +39,13 @@ def buy_order(request, user_uid):
     if request.method == 'POST':
         if validUser(user_uid):
             # Логика
-            store = JSONParser().parse(request)
-            store = store
+            store = request.data
+            req = requests.post('http://127.0.0.1:8100/api/v1/orders/{}'.format(user_uid), json=store)
+            req = req.json()
+            response = JsonResponse(1, status=status.HTTP_201_CREATED, safe=False)
+            response['Location'] = 'http://127.0.0.1:8100/api/v1/orders/{user_uid}/purchase/{order_uid}'.format(
+                user_uid=user_uid, order_uid=req["orderUid"])
+            return response
         else:
             return JsonResponse({'message': 'The tutorial does not exist or No Content'},
                                 status=status.HTTP_404_NOT_FOUND)
