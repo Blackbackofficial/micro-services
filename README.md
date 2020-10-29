@@ -22,7 +22,7 @@ graph TD
 
 Все сервисы имеют health-чеки:
 ```shell script
-curl https://warranty-service-app.herokuapp.com/manage/health --user management:passwd | jq
+curl https://warranty-service-app.herokuapp.com/manage/health
 {
   "status": "Work",
     "components": {
