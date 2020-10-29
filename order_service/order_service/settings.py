@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
-    'orders.apps.OrdersConfig'
+    'orders.apps.OrdersConfig',
+    'rest_framework_swagger',
 ]
 
 REST_FRAMEWORK = {
