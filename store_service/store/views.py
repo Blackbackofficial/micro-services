@@ -8,7 +8,6 @@ from .models import Store
 from .serializers import StoreSerializer
 from django.db import connection
 from datetime import datetime, timezone
-from rest_framework import viewsets
 import requests
 
 
@@ -132,12 +131,3 @@ class HealthCheckCustom(View):
                                      }
                                  }}, status=status.HTTP_200_OK)
 
-
-class BaseViewSet(viewsets.ModelViewSet):
-    def get_queryset(self):
-        return self.model.objects.all()
-
-
-class StoreViewset(BaseViewSet):
-    serializer_class = StoreSerializer
-    model = Store
