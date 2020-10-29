@@ -1,8 +1,9 @@
-from rest_framework import serializers
-from store.models import Store
+from rest_framework_json_api import serializers
+from .models import Store
 
 
 class StoreSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Store
-        fields = ('id', 'name', 'user_uid')
+        fields = '__all__'

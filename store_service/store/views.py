@@ -6,9 +6,10 @@ from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
 from .models import Store
 from .serializers import StoreSerializer
-import requests
 from django.db import connection
 from datetime import datetime, timezone
+from rest_framework import viewsets
+import requests
 
 
 def validUser(user_uid):
@@ -130,3 +131,13 @@ class HealthCheckCustom(View):
                                          "offset": offset
                                      }
                                  }}, status=status.HTTP_200_OK)
+
+
+class BaseViewSet(viewsets.ModelViewSet):
+    def get_queryset(self):
+        return self.model.objects.all()
+
+
+class StoreViewset(BaseViewSet):
+    serializer_class = StoreSerializer
+    model = Store
