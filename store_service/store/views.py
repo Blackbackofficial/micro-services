@@ -130,4 +130,3 @@ class HealthCheckCustom(View):
                                          "offset": offset
                                      }
                                  }}, status=status.HTTP_200_OK)
-
