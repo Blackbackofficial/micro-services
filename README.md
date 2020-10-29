@@ -28,7 +28,7 @@ curl https://warranty-service-app.herokuapp.com/manage/health
     "components": {
       "db": {
       "status": "Work",
-      "name": store,
+      "name": "store",
       "database": "PostgreSQL"
       },
       "ping": {
