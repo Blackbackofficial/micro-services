@@ -1,11 +1,21 @@
+from venv import logger
+
 from django.core.exceptions import ValidationError
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse, HttpResponseServerError
+from django.views import View
+from health_check import settings
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
 from .models import Store
 from .serializers import StoreSerializer
 import requests
+from django.db import connection
+import concurrent.futures
+from datetime import datetime, timezone
+from json import dumps
+from timeit import timeit
+from django.http import HttpResponse
 
 
 def validUser(user_uid):
@@ -94,3 +104,58 @@ def get_order_refund(request, user_uid, order_uid):
                                 status=status.HTTP_404_NOT_FOUND)
     else:
         return JsonResponse('', status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+
+@api_view(['GET'])
+def pingg(*args, **kwargs):
+    status_providers = {
+        'resource': (
+            ('test', 'application.module.test_function', [1, 2], {'foo': 'bar'}),
+        )
+    }
+    providers = getattr(settings, 'status_providers', {
+        'health': (
+            ('ping', 'health_check.providers.health.ping', None, None),
+            ('databases', 'health_check.providers.django.health.databases', None, None),
+            ('caches', 'health_check.providers.django.health.caches', None, None),
+        ),
+        'stats': (
+            ('databases', 'health_check.providers.django.stats.databases', None, None),
+            ('code', 'health_check.providers.stats.code', None, None),
+        )
+    }
+                        )
+    return providers
+
+
+class HealthCheckCustom(View):
+    def get(self, request, *args, **kwargs):
+        utc_time = datetime.now(timezone.utc)
+        local_time = utc_time.astimezone()
+        offset = local_time.utcoffset().total_seconds()
+        if offset == 0.0:
+            offset = "None"
+
+        db_name = connection.settings_dict['NAME']
+
+        with connection.cursor() as cursor:
+            cursor.execute("select 1")
+            one = cursor.fetchone()[0]
+            if one != 1:
+                raise Exception('The site did not pass the health check')
+            return JsonResponse({"status": "Work",
+                                 "components": {
+                                     "db": {
+                                         "status": "Work",
+                                         "name": db_name,
+                                         "database": "PostgreSQL"
+                                     },
+                                     "ping": {
+                                         "status": "Work"
+                                     },
+                                     "time": {
+                                         "epoch": int(utc_time.timestamp()),
+                                         "local": local_time.isoformat(),
+                                         "offset": offset
+                                     }
+                                 }}, status=status.HTTP_200_OK)
