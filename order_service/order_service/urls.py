@@ -21,4 +21,5 @@ API_VERSION = 'api/v1/'
 urlpatterns = [
     path('admin/', admin.site.urls),
     path(API_VERSION+'orders/', include("orders.urls")),
+    path('manage/health/', include('orders.health_url')),
 ]

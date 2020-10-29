@@ -100,7 +100,7 @@ def get_order_refund(request, user_uid, order_uid):
 
 
 class HealthCheckCustom(View):
-    def get(self, request, *args, **kwargs):
+    def get(self, *args, **kwargs):
         utc_time = datetime.now(timezone.utc)
         local_time = utc_time.astimezone()
         offset = local_time.utcoffset().total_seconds()
