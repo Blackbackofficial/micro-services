@@ -6,9 +6,9 @@ from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
 from .models import Store
 from .serializers import StoreSerializer
-import requests
 from django.db import connection
 from datetime import datetime, timezone
+import requests
 
 
 def validUser(user_uid):
