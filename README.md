@@ -24,18 +24,21 @@ graph TD
 ```shell script
 curl https://warranty-service-app.herokuapp.com/manage/health --user management:passwd | jq
 {
-  "status": "UP",
-  "components": {
-    "db": {
-      "status": "UP",
-      "details": {
-        "database": "PostgreSQL",
-        "validationQuery": "isValid()"
+  "status": "Work",
+    "components": {
+      "db": {
+      "status": "Work",
+      "name": store,
+      "database": "PostgreSQL"
+      },
+      "ping": {
+        "status": "Work"
+      },
+      "time": {
+        "epoch": 1603933252,
+        "local": "2020-10-29T01:00:52.658050+00:00",
+        "offset": 0.4
       }
-    },
-    "ping": {
-      "status": "UP"
-    }
-  }
+   }
 }
 ```
