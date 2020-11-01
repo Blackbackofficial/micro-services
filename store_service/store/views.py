@@ -4,29 +4,29 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
 from .models import Store
-from .serializers import StoreSerializer
 import requests
 
 
-def validUser(user_uid):
-    try:
-        Store.objects.get(user_uid=user_uid)
-        return True
-    except ValidationError:
-        return False
-
-
+# API
 @api_view(['GET'])
 def get_orders(request, user_uid):
     if validUser(user_uid):
         # Логика
-        store = Store.objects.all()
-        serializer = StoreSerializer(store, many=True)
-        # r = requests.get('https://peaceful-shelf-78026.herokuapp.com/persons')
-        # # persons = JSONParser().parse('https://peaceful-shelf-78026.herokuapp.com/persons')
-        return JsonResponse(serializer.data, safe=False)
-    else:
-        return JsonResponse({'message': 'The tutorial does not exist or No Content'}, status=status.HTTP_404_NOT_FOUND)
+        store_req = requests.get('http://127.0.0.1:8100/api/v1/orders/{}'.format(user_uid), json=request.data)
+        filter_req = filter_response(store_req)
+        return JsonResponse(filter_req, status=status.HTTP_200_OK, safe=False)
+    return JsonResponse({'message': 'The tutorial does not exist or No Content'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+def get_order(request, user_uid, order_uid):
+    if validUser(user_uid):
+        # Логика
+        store_req = requests.get('http://127.0.0.1:8100/api/v1/orders/{user_uid}/{order_uid}'.format(
+            user_uid=user_uid, order_uid=order_uid), json=request.data)
+        store_req = filter_response(store_req)
+        return JsonResponse(store_req, status=status.HTTP_200_OK, safe=False)
+    return JsonResponse({'message': 'The tutorial does not exist or No Content'}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['POST'])
@@ -38,18 +38,7 @@ def buy_order(request, user_uid):
         response['Location'] = 'http://127.0.0.1:8100/api/v1/orders/{user_uid}/purchase/{order_uid}'.format(
             user_uid=user_uid, order_uid=order_req["orderUid"])
         return response
-    else:
-        return JsonResponse({'message': 'The tutorial does not exist or No Content'}, status=status.HTTP_404_NOT_FOUND)
-
-
-@api_view(['GET'])
-def get_order(request, user_uid, order_uid):
-    if validUser(user_uid):
-        # Логика
-        store = JSONParser().parse(request)
-        store = store
-    else:
-        return JsonResponse({'message': 'The tutorial does not exist or No Content'}, status=status.HTTP_404_NOT_FOUND)
+    return JsonResponse({'message': 'The tutorial does not exist or No Content'}, status=status.HTTP_404_NOT_FOUND)
 
 
 @api_view(['POST'])
@@ -58,11 +47,9 @@ def get_order_warranty(request, user_uid, order_uid):
         # Логика
         store = JSONParser().parse(request)
         store = store
-    else:
-        return JsonResponse({'message': 'The tutorial does not exist or No Content'}, status=status.HTTP_404_NOT_FOUND)
+    return JsonResponse({'message': 'The tutorial does not exist or No Content'}, status=status.HTTP_404_NOT_FOUND)
 
 
-# Только метод DELETE
 @api_view(['DELETE'])
 def get_order_refund(request, user_uid, order_uid):
     if validUser(user_uid):
@@ -71,5 +58,24 @@ def get_order_refund(request, user_uid, order_uid):
             order_req = order_req.json()
             return JsonResponse(order_req, status=status.HTTP_404_NOT_FOUND, safe=False)
         return JsonResponse(1, status=status.HTTP_204_NO_CONTENT, safe=False)
+    return JsonResponse({'message': 'The tutorial does not exist or No Content'}, status=status.HTTP_404_NOT_FOUND)
+
+
+# Support function
+def filter_response(store_req):
+    store_req = store_req.json()
+    if type(store_req) is dict:
+        store_req['date'] = store_req['orderDate']
+        del store_req['itemUid'], store_req['status'], store_req['orderDate']
     else:
-        return JsonResponse({'message': 'The tutorial does not exist or No Content'}, status=status.HTTP_404_NOT_FOUND)
+        for item in store_req:
+            item['date'] = item['orderDate']
+            del item['itemUid'], item['status'], item['orderDate']
+    return store_req
+
+
+def validUser(user_uid):
+    try:
+        return Store.objects.get(user_uid=user_uid)
+    except ValidationError:
+        return False
