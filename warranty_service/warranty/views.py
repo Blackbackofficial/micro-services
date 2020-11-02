@@ -19,8 +19,8 @@ def actions_warranty(request, item_uid):
     if request.method == 'GET':
         if validWarranty(item_uid):
             warranty = validWarranty(item_uid)
-            filter_req = filter_response(warranty)
-            return JsonResponse(filter_req, status=status.HTTP_200_OK, safe=False)
+            filter_res = filter_response(warranty)
+            return JsonResponse(filter_res, status=status.HTTP_200_OK, safe=False)
         return JsonResponse({'message': 'The tutorial does not exist or No Content'}, status=status.HTTP_404_NOT_FOUND)
     if request.method == 'DELETE':
         if validWarranty(item_uid):
@@ -33,17 +33,17 @@ def actions_warranty(request, item_uid):
 @api_view(['POST'])
 def request_warranty(request, item_uid):
     if validWarranty(item_uid):
-        warranty_safe = warranty_item = validWarranty(item_uid)
-        warranty_item = WarrantySerializer(warranty_item)
-        warranty_req = JSONParser().parse(request)
-        decision = dict(warrantyDate=warranty_item.data['warranty_date'], decision='')
-        if warranty_item.data['status'] == 'ON_WARRANTY':
-            warranty_item = warranty_item.data
-            warranty_item['status'] = 'USE_WARRANTY'
-            warranty_item = WarrantySerializer(instance=warranty_safe, data=warranty_item)
-            if warranty_item.is_valid():
-                warranty_item.save()
-            if warranty_req['availableCount'] > 0:
+        warranty_update = warranty_data = validWarranty(item_uid)
+        warranty_data = WarrantySerializer(warranty_data)
+        security_post = JSONParser().parse(request)
+        decision = dict(warrantyDate=warranty_data.data['warranty_date'])
+        if warranty_data.data['status'] == 'ON_WARRANTY':
+            warranty_data = warranty_data.data
+            warranty_data['status'] = 'USE_WARRANTY'
+            warranty_data = WarrantySerializer(instance=warranty_update, data=warranty_data)
+            if warranty_data.is_valid():
+                warranty_data.save()
+            if security_post['availableCount'] > 1:
                 decision['decision'] = 'RETURN'
             else:
                 decision['decision'] = 'FIXING'

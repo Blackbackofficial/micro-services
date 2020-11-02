@@ -3,5 +3,5 @@ from django.urls import path
 
 
 urlpatterns = [
-    path('', HealthCheckCustom.as_view(), name='health_check_custom'),
+    path('', HealthCheckCustom.as_view())
 ]
