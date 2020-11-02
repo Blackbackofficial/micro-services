@@ -7,7 +7,7 @@ from rest_framework.decorators import api_view
 
 
 @api_view(['GET', 'POST', 'DELETE'])
-def make_orders(request, user_uid):
+def actions_orders(request, user_uid):
     if request.method == 'POST':
         store_data = JSONParser().parse(request)
         order = dict(status='PAID', user_uid=user_uid)
@@ -27,8 +27,6 @@ def make_orders(request, user_uid):
             return JsonResponse(1, status=status.HTTP_204_NO_CONTENT, safe=False)
         except Orders.DoesNotExist:
             return JsonResponse({'message': 'Order {} not found'.format(user_uid)}, status=status.HTTP_404_NOT_FOUND)
-    else:
-        return JsonResponse('', status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 @api_view(['GET'])
@@ -41,11 +39,17 @@ def one_order(request, user_uid, order_uid):
         order_uid=order_uid, user_uid=user_uid)}, status=status.HTTP_404_NOT_FOUND)
 
 
+@api_view(['POST'])
+def warranty_order(request, order_uid):
+    # Логика
+    return JsonResponse({'message': 'Not found order {}'.format(order_uid)}, status=status.HTTP_404_NOT_FOUND)
+
+
 def filter_response(orders):
     orders_serializer = OrdersSerializer(orders, many=True)
     for item in orders_serializer.data:
         item['orderUid'] = item['order_uid']
         item['itemUid'] = item['item_uid']
         item['orderDate'] = item['order_date']
-        del item['order_uid'], item['item_uid'], item['order_date']
+        del item['order_uid'], item['item_uid'], item['order_date'], item['id'], item['user_uid']
     return orders_serializer.data
