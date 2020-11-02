@@ -1,5 +1,4 @@
 from rest_framework.parsers import JSONParser
-
 from .models import Warranty
 from .serializers import WarrantySerializer
 from django.http import JsonResponse
