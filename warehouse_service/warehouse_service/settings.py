@@ -37,7 +37,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'warehouse.apps.WarehouseConfig',
+    'rest_framework_swagger',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -74,10 +81,14 @@ WSGI_APPLICATION = 'warehouse_service.wsgi.application'
 # https://docs.djangoproject.com/en/3.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
+     'default': {
+             'ENGINE': 'django.db.backends.postgresql_psycopg2',
+             'NAME': 'warehouse',
+             'USER': 'ivan',
+             'PASSWORD': 'password',
+             'HOST': 'localhost',
+             'PORT': '',
+     }
 }
 
 
