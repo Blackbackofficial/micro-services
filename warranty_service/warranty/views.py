@@ -33,11 +33,10 @@ def actions_warranty(request, item_uid):
 def request_warranty(request, item_uid):
     if validWarranty(item_uid):
         warranty_update = warranty_data = validWarranty(item_uid)
-        warranty_data = WarrantySerializer(warranty_data)
+        warranty_data = WarrantySerializer(warranty_data).data
         security_post = JSONParser().parse(request)
-        decision = dict(warrantyDate=warranty_data.data['warranty_date'])
-        if warranty_data.data['status'] == 'ON_WARRANTY':
-            warranty_data = warranty_data.data
+        decision = dict(warrantyDate=warranty_data['warranty_date'])
+        if warranty_data['status'] == 'ON_WARRANTY':
             warranty_data['status'] = 'USE_WARRANTY'
             warranty_data = WarrantySerializer(instance=warranty_update, data=warranty_data)
             if warranty_data.is_valid():
