@@ -18,13 +18,13 @@ def actions_warranty(request, item_uid):
     if request.method == 'GET':
         if validWarranty(item_uid):
             warranty = validWarranty(item_uid)
-            filter_res = filter_response(warranty)
-            return JsonResponse(filter_res, status=status.HTTP_200_OK, safe=False)
+            filterRes = filter_response(warranty)
+            return JsonResponse(filterRes, status=status.HTTP_200_OK, safe=False)
         return JsonResponse({'message': 'The tutorial does not exist or No Content'}, status=status.HTTP_404_NOT_FOUND)
     if request.method == 'DELETE':
         if validWarranty(item_uid):
-            warranty_delete = validWarranty(item_uid)
-            warranty_delete.delete()
+            warrantyDelete = validWarranty(item_uid)
+            warrantyDelete.delete()
             return JsonResponse(1, status=status.HTTP_204_NO_CONTENT, safe=False)
         return JsonResponse({'message': 'The tutorial does not exist or No Content'}, status=status.HTTP_404_NOT_FOUND)
 
@@ -32,16 +32,16 @@ def actions_warranty(request, item_uid):
 @api_view(['POST'])
 def request_warranty(request, item_uid):
     if validWarranty(item_uid):
-        warranty_update = warranty_data = validWarranty(item_uid)
-        warranty_data = WarrantySerializer(warranty_data).data
-        security_post = JSONParser().parse(request)
-        decision = dict(warrantyDate=warranty_data['warranty_date'])
-        if warranty_data['status'] == 'ON_WARRANTY':
-            warranty_data['status'] = 'USE_WARRANTY'
-            warranty_data = WarrantySerializer(instance=warranty_update, data=warranty_data)
-            if warranty_data.is_valid():
-                warranty_data.save()
-            if security_post['availableCount'] > 1:
+        instWarranty = warrantyData = validWarranty(item_uid)
+        warrantyData = WarrantySerializer(warrantyData).data
+        parseDict = JSONParser().parse(request)
+        decision = dict(warrantyDate=warrantyData['warranty_date'])
+        if warrantyData['status'] == 'ON_WARRANTY':
+            warrantyData['status'] = 'USE_WARRANTY'
+            warranty_serializer = WarrantySerializer(instance=instWarranty, data=warrantyData)
+            if warranty_serializer.is_valid():
+                warranty_serializer.save()
+            if parseDict['availableCount'] > 1:
                 decision['decision'] = 'RETURN'
             else:
                 decision['decision'] = 'FIXING'
