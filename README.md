@@ -1,10 +1,10 @@
 # Microservices
 
 ## Состав
-* [Store Service](store-service/README.md)
-* [Order Service](order-service/README.md)
-* [Warehouse Service](warehouse-service/README.md)
-* [Warranty Service](warranty-service/README.md)
+* [Store Service](store_service/README.md)
+* [Order Service](order_service/README.md)
+* [Warehouse Service](warehouse_service/README.md)
+* [Warranty Service](warranty_service/README.md)
 
 ## Взаимодействие сервисов
 ```mermaid

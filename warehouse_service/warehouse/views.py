@@ -21,6 +21,8 @@ def post_items(request):
         if req_serializer.is_valid():
             req_serializer.save()
         orderItem = dict(order_uid=parseDict['orderUid'], item_id=instData['id'])
+        if 'orderItemUid' in parseDict:
+            orderItem.update({'order_item_uid': parseDict['orderItemUid']})
         item_serializer = OrderItemSerializer(data=orderItem)
         if item_serializer.is_valid():
             item_serializer.save()
@@ -38,7 +40,7 @@ def request_warranty(request, orderItemUid):
     try:
         orderItem = Order_item.objects.get(order_item_uid=orderItemUid).item_id
         availableCount = Items.objects.get(id=orderItem).available_count
-        resJson = dict(available_count=availableCount, reason=parseDict['reason'])
+        resJson = dict(availableCount=availableCount, reason=parseDict['reason'])
         requestW = requests.post('http://127.0.0.1:8200/api/v1/warranty/{}/warranty'.format(orderItemUid), json=resJson)
         if requestW.status_code == 404:
             return JsonResponse({'message': 'Warranty not found for itemUid \'{}\''.format(orderItemUid)},
@@ -58,7 +60,6 @@ def request_items(request, orderItemUid):
         return JsonResponse({'message': 'Order \'{}\' not find'.format(orderItemUid)}, status=status.HTTP_404_NOT_FOUND)
 
     if request.method == 'GET':
-        del items['id'], items['available_count']
         return JsonResponse(items, status=status.HTTP_200_OK, safe=False)
     if request.method == 'DELETE':
         items['available_count'] += 1
