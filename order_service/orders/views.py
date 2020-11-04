@@ -60,10 +60,10 @@ def warranty_order(request, order_uid):
 
 
 def filter_response(orders):
-    orders_serializer = OrdersSerializer(orders, many=True)
-    for item in orders_serializer.data:
+    orders_serializer = OrdersSerializer(orders, many=True).data
+    for item in orders_serializer:
         item['orderUid'] = item['order_uid']
         item['itemUid'] = item['item_uid']
         item['orderDate'] = item['order_date']
         del item['order_uid'], item['item_uid'], item['order_date'], item['id'], item['user_uid']
-    return orders_serializer.data
+    return orders_serializer
