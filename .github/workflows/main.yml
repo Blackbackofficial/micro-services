@@ -13,9 +13,9 @@ jobs:
       postgres:
         image: postgres:10.8
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: github_actions
+          POSTGRES_USER: mkdnkpathkkuvj
+          POSTGRES_PASSWORD: 78fd400419ef1a8fe37b365d650b3fce21f7a733b5f44de35ecfc96c9347d327
+          POSTGRES_DB: d88g1f7fkvu6j6
         ports:
           - 5432:5432
         options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
@@ -34,11 +34,11 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Install Dependencies
       run: |
-        cd warranty_service/
         python -m pip install --upgrade pip
         pip install -r requirements.txt
     - name: Migrate
       run: |
+        cd warranty_service/
         python3 manage.py makemigrations
         python3 manage.py migrate
     - name: Deploy to Heroku
