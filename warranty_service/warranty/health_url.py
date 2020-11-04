@@ -1,6 +1,6 @@
 from django.urls import path
-from warranty_service.warranty.migrations.health import HealthCheckCustom
+from . import health
 
 urlpatterns = [
-    path('', HealthCheckCustom.as_view())
+    path('', health.HealthCheckCustom.as_view())
 ]
