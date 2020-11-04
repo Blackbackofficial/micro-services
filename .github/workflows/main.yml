@@ -43,12 +43,10 @@ jobs:
         python3 manage.py makemigrations
         python3 manage.py migrate
     - name: Deploy to Heroku
-      env:
-        HEROKU_API_TOKEN: 9bb8f29a-3dab-4878-86a3-33ab7960a1cb
-        HEROKU_APP_NAME: warranty-ivan
-      if: github.ref == 'refs/heads/main' && job.status == 'success'
-      run: |
-        git remote add heroku https://heroku:$HEROKU_API_TOKEN@git.heroku.com/$HEROKU_APP_NAME.git
-        git push heroku HEAD:main -f
-        heroku run python manage.py migrate -a warranty-ivan
+      uses: akhileshns/heroku-deploy@v3.4.6
+        with:
+          heroku_api_key: 9bb8f29a-3dab-4878-86a3-33ab7960a1cb
+          heroku_app_name: warranty-ivan
+          heroku_email: Chernov@mail.ru
+          appdir: warranty_service
 
