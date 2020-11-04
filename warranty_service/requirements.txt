@@ -1,8 +1,11 @@
+asgiref==3.2.10
 certifi==2020.6.20
 chardet==3.0.4
+clinner==1.12.3
 colorlog==3.2.0
 coreapi==2.3.3
 coreschema==0.0.4
+dj-database-url==0.5.0
 Django==3.0.10
 django-cors-headers==3.5.0
 django-filter==2.4.0
@@ -11,7 +14,6 @@ django-openapi==0.1.1.10
 django-rest-swagger==2.2.0
 djangorestframework==3.11.2
 djangorestframework-jsonapi==3.2.0
-gunicorn==20.0.4
 gitdb==4.0.5
 GitPython==3.1.11
 idna==2.10
@@ -30,13 +32,4 @@ smmap==3.0.4
 sqlparse==0.4.1
 uritemplate==3.0.1
 urllib3==1.25.11
-appdirs==1.4.4
-distlib==0.3.1
-filelock==3.0.12
 gunicorn==20.0.4
-pipenv==2020.8.13
-psycopg2==2.8.6
-psycopg2-binary==2.8.6
-python-decouple==3.3
-virtualenv==20.0.31
-virtualenv-clone==0.5.4
