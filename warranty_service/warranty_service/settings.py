@@ -26,7 +26,7 @@ SECRET_KEY = '($8orjsycf_j2kvv%-xrn77@(8ditj3jgf0je-fqpj$u_=n9z5'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com']
 
 
 # Application definition
@@ -87,10 +87,22 @@ DATABASES = {
              'NAME': 'd88g1f7fkvu6j6',
              'USER': 'mkdnkpathkkuvj',
              'PASSWORD': '78fd400419ef1a8fe37b365d650b3fce21f7a733b5f44de35ecfc96c9347d327',
-             'HOST': '127.0.0.1',
+             'HOST': 'ec2-54-75-225-52.eu-west-1.compute.amazonaws.com',
              'PORT': '5432',
      }
 }
+
+if os.environ.get('GITHUB_WORKFLOW'):
+    DATABASES = {
+        'default': {
+           'ENGINE': 'django.db.backends.postgresql_psycopg2',
+           'NAME': 'github_actions',
+           'USER': 'postgres',
+           'PASSWORD': 'postgres',
+           'HOST': '127.0.0.1',
+           'PORT': '5432',
+        }
+    }
 
 # db_from_env = dj_database_url.config(conn_max_age=500)
 # DATABASES['default'].update(db_from_env)
