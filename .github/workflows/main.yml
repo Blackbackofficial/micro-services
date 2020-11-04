@@ -1,0 +1,53 @@
+name: Django Test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:10.8
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: github_actions
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    strategy:
+      max-parallel: 4
+      matrix:
+        python-version: [3.8]
+
+    steps:
+    - uses: actions/checkout@v2
+    - run: |
+        git fetch --prune --unshallow
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install Dependencies
+      run: |
+        cd warranty_service/
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+    - name: Migrate
+      run: |
+        python3 manage.py makemigrations
+        python3 manage.py migrate
+    - name: Deploy to Heroku
+      env:
+        HEROKU_API_TOKEN: 9bb8f29a-3dab-4878-86a3-33ab7960a1cb
+        HEROKU_APP_NAME: warranty-ivan
+      if: github.ref == 'refs/heads/master' && job.status == 'success'
+      run: |
+        git remote add heroku https://heroku:$HEROKU_API_TOKEN@git.heroku.com/$HEROKU_APP_NAME.git
+        git push heroku HEAD:main -f
+        heroku run python manage.py migrate -a warranty-ivan
+

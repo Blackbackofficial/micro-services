@@ -83,11 +83,11 @@ WSGI_APPLICATION = 'warranty_service.wsgi.application'
 DATABASES = {
      'default': {
              'ENGINE': 'django.db.backends.postgresql_psycopg2',
-             'NAME': 'warranty',
-             'USER': 'ivan',
-             'PASSWORD': 'password',
+             'NAME': 'd88g1f7fkvu6j6',
+             'USER': 'mkdnkpathkkuvj',
+             'PASSWORD': '78fd400419ef1a8fe37b365d650b3fce21f7a733b5f44de35ecfc96c9347d327',
              'HOST': 'localhost',
-             'PORT': '',
+             'PORT': '5432',
      }
 }
 
