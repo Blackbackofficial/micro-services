@@ -1,6 +1,7 @@
 # Warehouse Service
 
 ## Описание API
+1. `GET /manage/health` – Swagger API;
 1. `GET /api/v1/warehouse/{itemUid}` – информация о вещах на складе;
 2. `POST /api/v1/warehouse` – запрос на получение вещи со склада по новому заказу;
 3. `POST /api/v1/warehouse/{itemUid}/warranty` – запрос решения по гарантии;

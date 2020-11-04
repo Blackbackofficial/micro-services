@@ -1,6 +1,7 @@
 # Order Service
 
 ## Описание API
+1. `GET /manage/health` – Swagger API;
 1. `POST /api/v1/orders/{userUid}` – сделать заказ от имени пользователя;
 1. `GET /api/v1/orders/{userUid}/{orderUid}` – получить информацию по конкретному заказу пользователя;
 1. `GET /api/v1/orders/{userUid}` – получить все заказы пользователя;

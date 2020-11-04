@@ -1,6 +1,7 @@
 # Warranty Service
 
 ## Описание API
+1. `GET /manage/health` – Swagger API;
 1. `GET /api/v1/warranty/{itemUid}` – информация о статусе гарантии;
 2. `POST /api/v1/warranty/{itemUid}/warranty` – запрос решения по гарантии;
 3. `POST /api/v1/warranty/{itemUid}` – запрос на начало гарантийного периода;
