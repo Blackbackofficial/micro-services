@@ -88,7 +88,7 @@ DATABASES = {
              'USER': 'mkdnkpathkkuvj',
              'PASSWORD': '78fd400419ef1a8fe37b365d650b3fce21f7a733b5f44de35ecfc96c9347d327',
              'HOST': 'localhost',
-             'PORT': '5432',
+             'PORT': '',
      }
 }
 
