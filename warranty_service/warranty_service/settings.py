@@ -16,7 +16,6 @@ import dj_database_url
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
@@ -27,7 +26,6 @@ SECRET_KEY = '($8orjsycf_j2kvv%-xrn77@(8ditj3jgf0je-fqpj$u_=n9z5'
 DEBUG = True
 
 ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com']
-
 
 # Application definition
 
@@ -77,29 +75,28 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'warranty_service.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
 DATABASES = {
-     'default': {
-             'ENGINE': 'django.db.backends.postgresql_psycopg2',
-             'NAME': 'd88g1f7fkvu6j6',
-             'USER': 'mkdnkpathkkuvj',
-             'PASSWORD': '78fd400419ef1a8fe37b365d650b3fce21f7a733b5f44de35ecfc96c9347d327',
-             'HOST': 'localhost',
-             'PORT': '',
-     }
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'd88g1f7fkvu6j6',
+        'USER': 'mkdnkpathkkuvj',
+        'PASSWORD': '78fd400419ef1a8fe37b365d650b3fce21f7a733b5f44de35ecfc96c9347d327',
+        'HOST': 'localhost',
+        'PORT': '',
+    }
 }
 if os.environ.get('GITHUB_WORKFLOW'):
     DATABASES = {
         'default': {
-           'ENGINE': 'django.db.backends.postgresql_psycopg2',
-           'NAME': 'github_actions',
-           'USER': 'postgres',
-           'PASSWORD': 'postgres',
-           'HOST': '127.0.0.1',
-           'PORT': '5432',
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'd88g1f7fkvu6j6',
+            'USER': 'mkdnkpathkkuvj',
+            'PASSWORD': '78fd400419ef1a8fe37b365d650b3fce21f7a733b5f44de35ecfc96c9347d327',
+            'HOST': '127.0.0.1',
+            'PORT': '5432',
         }
     }
 
@@ -124,7 +121,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
@@ -137,7 +133,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
