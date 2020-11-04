@@ -32,3 +32,13 @@ smmap==3.0.4
 sqlparse==0.4.1
 uritemplate==3.0.1
 urllib3==1.25.11
+appdirs==1.4.4
+distlib==0.3.1
+filelock==3.0.12
+gunicorn==20.0.4
+pipenv==2020.8.13
+psycopg2==2.8.6
+psycopg2-binary==2.8.6
+python-decouple==3.3
+virtualenv==20.0.31
+virtualenv-clone==0.5.4
