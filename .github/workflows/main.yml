@@ -44,9 +44,9 @@ jobs:
         python3 manage.py migrate
     - name: Deploy to Heroku
       uses: akhileshns/heroku-deploy@v3.4.6
-        with:
-          heroku_api_key: 9bb8f29a-3dab-4878-86a3-33ab7960a1cb
-          heroku_app_name: warranty-ivan
-          heroku_email: Chernov@mail.ru
-          appdir: warranty_service
+      with:
+        heroku_api_key: 9bb8f29a-3dab-4878-86a3-33ab7960a1cb
+        heroku_app_name: warranty-ivan
+        heroku_email: Chernov@mail.ru
+        appdir: warranty_service
 
