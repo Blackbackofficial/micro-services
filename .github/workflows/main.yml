@@ -35,10 +35,10 @@ jobs:
         appdir: warranty_service
 
     - name: Migrate
-    run: |
-      cd ..
-      cd warehouse_service/
-      python3 manage.py migrate
+      run: |
+        cd ..
+        cd warehouse_service/
+        python3 manage.py migrate
     - name: Deploy Warehouse service
       uses: akhileshns/heroku-deploy@v3.4.6
       with:
