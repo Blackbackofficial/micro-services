@@ -22,27 +22,36 @@ jobs:
         python -m pip install --upgrade pip
         pip install dj-database-url
         pip install -r warranty_service/requirements.txt
-    - name: Migrate
-      run: |
-        cd warranty_service/
-        python3 manage.py migrate
-    - name: Deploy Warranty service
-      uses: akhileshns/heroku-deploy@v3.4.6
-      with:
-        heroku_api_key: 9bb8f29a-3dab-4878-86a3-33ab7960a1cb
-        heroku_app_name: warranty-ivan
-        heroku_email: Chernov-Ivan.1997@yandex.ru
-        appdir: warranty_service
+#    - name: Migrate
+#      run: |
+#        cd warranty_service/
+#        python3 manage.py migrate
+#    - name: Deploy Warranty service
+#      uses: akhileshns/heroku-deploy@v3.4.6
+#      with:
+#        heroku_api_key: 9bb8f29a-3dab-4878-86a3-33ab7960a1cb
+#        heroku_app_name: warranty-ivan
+#        heroku_email: Chernov-Ivan.1997@yandex.ru
+#        appdir: warranty_service
 
     - name: Migrate
       run: |
         cd warehouse_service/
         python3 manage.py migrate
-    - name: Deploy Warehouse service
-      uses: akhileshns/heroku-deploy@v3.4.6
-      with:
-        heroku_api_key: 9bb8f29a-3dab-4878-86a3-33ab7960a1cb
-        heroku_app_name: warehouse-ivan
-        heroku_email: Chernov-Ivan.1997@yandex.ru
-        appdir: warehouse_service
-
+#    - name: Deploy Warehouse service
+#      uses: akhileshns/heroku-deploy@v3.4.6
+#      with:
+#        heroku_api_key: 9bb8f29a-3dab-4878-86a3-33ab7960a1cb
+#        heroku_app_name: warehouse-ivan
+#        heroku_email: Chernov-Ivan.1997@yandex.ru
+#        appdir: warehouse_service
+    - name: Deploy to Heroku
+      env:
+        HEROKU_API_TOKEN: 9bb8f29a-3dab-4878-86a3-33ab7960a1cb
+        HEROKU_APP_NAME: warehouse-ivan
+      if: github.ref == 'refs/heads/main' && job.status == 'success'
+      run: |
+        git remote add heroku https://heroku:$HEROKU_API_TOKEN@git.heroku.com/$HEROKU_APP_NAME.git
+        heroku config:set DISABLE_COLLECTSTATIC=1 --app $HEROKU_APP_NAME
+        git push heroku HEAD:main -f
+        heroku run python manage.py migrate -a warehouse-ivan
