@@ -40,7 +40,6 @@ jobs:
     - name: Migrate
       run: |
         cd warranty_service/
-        python3 manage.py makemigrations
         python3 manage.py migrate
     - name: Deploy Warranty service
       uses: akhileshns/heroku-deploy@v3.4.6
