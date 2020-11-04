@@ -36,7 +36,6 @@ jobs:
 
     - name: Migrate
       run: |
-        cd ..
         cd warehouse_service/
         python3 manage.py migrate
     - name: Deploy Warehouse service
