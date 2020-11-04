@@ -41,7 +41,7 @@ def request_warranty(request, orderItemUid):
         orderItem = Order_item.objects.get(order_item_uid=orderItemUid).item_id
         availableCount = Items.objects.get(id=orderItem).available_count
         resJson = dict(availableCount=availableCount, reason=parseDict['reason'])
-        requestW = requests.post('http://127.0.0.1:8200/api/v1/warranty/{}/warranty'.format(orderItemUid), json=resJson)
+        requestW = requests.post('https://warranty-ivan.herokuapp.com/api/v1/warranty/{}/warranty'.format(orderItemUid), json=resJson)
         if requestW.status_code == 404:
             return JsonResponse({'message': 'Warranty not found for itemUid \'{}\''.format(orderItemUid)},
                                 status=status.HTTP_404_NOT_FOUND)
