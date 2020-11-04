@@ -1,29 +1,10 @@
-name: Django Test
+name: Micro services
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+on: [ push ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:10.8
-        env:
-          POSTGRES_USER: mkdnkpathkkuvj
-          POSTGRES_PASSWORD: 78fd400419ef1a8fe37b365d650b3fce21f7a733b5f44de35ecfc96c9347d327
-          POSTGRES_DB: d88g1f7fkvu6j6
-        ports:
-          - 5432:5432
-        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
-    strategy:
-      max-parallel: 4
-      matrix:
-        python-version: [3.8]
-
     steps:
     - uses: actions/checkout@v2
     - run: |
@@ -35,12 +16,10 @@ jobs:
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install dj-database-url
         pip install -r warranty_service/requirements.txt
     - name: Migrate
       run: |
-        cd warranty_service/
-        python3 manage.py migrate
+        python3 cd warranty_service/manage.py migrate
     - name: Deploy Warranty service
       uses: akhileshns/heroku-deploy@v3.4.6
       with:

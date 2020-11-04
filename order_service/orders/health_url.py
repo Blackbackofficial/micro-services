@@ -1,7 +1,6 @@
-from CustomHealthCheck.HelthCheck import HealthCheckCustom
 from django.urls import path
-
+from . import health
 
 urlpatterns = [
-    path('', HealthCheckCustom.as_view())
+    path('', health.HealthCheckCustom.as_view())
 ]
