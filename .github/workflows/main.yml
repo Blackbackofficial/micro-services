@@ -31,6 +31,19 @@ jobs:
       with:
         heroku_api_key: 9bb8f29a-3dab-4878-86a3-33ab7960a1cb
         heroku_app_name: warranty-ivan
-        heroku_email: Chernov@mail.ru
+        heroku_email: Chernov-Ivan.1997@yandex.ru
         appdir: warranty_service
+
+    - name: Migrate
+    run: |
+      cd ..
+      cd warehouse_service/
+      python3 manage.py migrate
+    - name: Deploy Warehouse service
+      uses: akhileshns/heroku-deploy@v3.4.6
+      with:
+        heroku_api_key: 9bb8f29a-3dab-4878-86a3-33ab7960a1cb
+        heroku_app_name: warehouse-ivan
+        heroku_email: Chernov-Ivan.1997@yandex.ru
+        appdir: warehouse_service
 
