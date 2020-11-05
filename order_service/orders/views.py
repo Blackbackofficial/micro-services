@@ -16,8 +16,8 @@ def actions_orders(request, user_uid):
         if order_serializer.is_valid():
             order_serializer.save()
         parseDict.update({'orderUid': order_serializer.data["order_uid"], 'orderItemUid': order_serializer.data["item_uid"]})
-        warrantyResp = requests.post('http://127.0.0.1:8200/api/v1/warranty/{}'.format(order_serializer.data["item_uid"]))
-        warehouseResp = requests.post('http://127.0.0.1:8300/api/v1/warehouse/', json=parseDict)
+        warrantyResp = requests.post('https://warranty-ivan.herokuapp.com/api/v1/warranty/{}'.format(order_serializer.data["item_uid"]))
+        warehouseResp = requests.post('https://warehouse-ivan.herokuapp.com/api/v1/warehouse/', json=parseDict)
         if warrantyResp.status_code == 204 and warehouseResp.status_code == 200:
             return JsonResponse({"orderUid": order_serializer.data["order_uid"]}, status=status.HTTP_200_OK)
     if request.method == 'GET':
@@ -28,8 +28,8 @@ def actions_orders(request, user_uid):
         try:
             initOrder = order = Orders.objects.get(order_uid=user_uid)
             initOrder = initOrder.item_uid
-            warehouseResp = requests.delete('http://127.0.0.1:8300/api/v1/warehouse/{}'.format(initOrder))
-            warrantyResp = requests.delete('http://127.0.0.1:8200/api/v1/warranty/{}'.format(initOrder))
+            warehouseResp = requests.delete('https://warehouse-ivan.herokuapp.com/api/v1/warehouse/{}'.format(initOrder))
+            warrantyResp = requests.delete('https://warranty-ivan.herokuapp.com/api/v1/warranty/{}'.format(initOrder))
             if warehouseResp.status_code and warrantyResp.status_code == 204:
                 order.delete()
                 return JsonResponse(1, status=status.HTTP_204_NO_CONTENT, safe=False)
@@ -53,7 +53,7 @@ def one_order(request, user_uid, order_uid):
 def warranty_order(request, order_uid):
     parseDict = JSONParser().parse(request)
     item_uid = Orders.objects.get(order_uid=order_uid).item_uid
-    warehouseResp = requests.post('http://127.0.0.1:8300/api/v1/warehouse/{}/warranty'.format(item_uid), json=parseDict)
+    warehouseResp = requests.post('https://warehouse-ivan.herokuapp.com/api/v1/warehouse/{}/warranty'.format(item_uid), json=parseDict)
     if warehouseResp.status_code == 200:
         return JsonResponse(warehouseResp.json(), status=status.HTTP_200_OK)
     return JsonResponse({'message': 'Not found order {}'.format(order_uid)}, status=status.HTTP_404_NOT_FOUND)
