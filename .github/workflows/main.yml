@@ -22,7 +22,7 @@ jobs:
         python -m pip install --upgrade pip
         pip install dj-database-url
         pip install -r warranty_service/requirements.txt
-    - name: Migrate
+    - name: Migrate Warranty
       run: |
         cd warranty_service/
         python3 manage.py migrate
@@ -34,7 +34,7 @@ jobs:
         heroku_email: Chernov-Ivan.1997@yandex.ru
         appdir: warranty_service
 
-    - name: Migrate
+    - name: Migrate Warehouse
       run: |
         cd warehouse_service/
         python3 manage.py migrate
@@ -46,17 +46,28 @@ jobs:
         heroku_email: Chernov-Ivan.1997@yandex.ru
         appdir: warehouse_service
 
-    - name: Migrate
+    - name: Migrate Orders
       run: |
         cd order_service/
         python3 manage.py migrate
-    - name: Deploy Warehouse service
+    - name: Deploy Orders service
       uses: akhileshns/heroku-deploy@v3.4.6
       with:
         heroku_api_key: 9bb8f29a-3dab-4878-86a3-33ab7960a1cb
         heroku_app_name: orders-ivan
         heroku_email: Chernov-Ivan.1997@yandex.ru
         appdir: order_service
+    - name: Migrate Orders
+      run: |
+        cd order_service/
+        python3 manage.py migrate
+    - name: Deploy Orders service
+      uses: akhileshns/heroku-deploy@v3.4.6
+      with:
+        heroku_api_key: 9bb8f29a-3dab-4878-86a3-33ab7960a1cb
+        heroku_app_name: store-ivan
+        heroku_email: Chernov-Ivan.1997@yandex.ru
+        appdir: store_service
 #    - name: Deploy to Heroku
 #      env:
 #        HEROKU_API_TOKEN: 9bb8f29a-3dab-4878-86a3-33ab7960a1cb

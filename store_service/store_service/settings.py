@@ -25,7 +25,7 @@ SECRET_KEY = 'f42n@oauzhcum7bbt0+bkr%l#ekqm62^ns80413ght%bsv99p7'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['127.0.0.1', '.herokuapp.com']
 
 
 # Application definition
@@ -84,11 +84,11 @@ WSGI_APPLICATION = 'store_service.wsgi.application'
 DATABASES = {
      'default': {
              'ENGINE': 'django.db.backends.postgresql_psycopg2',
-             'NAME': 'store',
-             'USER': 'ivan',
-             'PASSWORD': 'password',
-             'HOST': 'localhost',
-             'PORT': '',
+             'NAME': 'd6qj2c2226fm2d',
+             'USER': 'vzwkqgdyecocuq',
+             'PASSWORD': 'ff2cd5edbbb12d4a4f1739e763a9df6e3b74e5c71821e88e250dd36ab72e632e',
+             'HOST': 'ec2-54-75-150-32.eu-west-1.compute.amazonaws.com',
+             'PORT': '5432',
      }
 }
 
@@ -130,3 +130,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+ADMINS = [
+    ('Ivan', 'Chernov-Ivan.1997@yandex.ru'),
+]
