@@ -68,13 +68,11 @@ jobs:
         heroku_app_name: store-ivan
         heroku_email: Chernov-Ivan.1997@yandex.ru
         appdir: store_service
-#    - name: Deploy to Heroku
-#      env:
-#        HEROKU_API_TOKEN: 9bb8f29a-3dab-4878-86a3-33ab7960a1cb
-#        HEROKU_APP_NAME: orders-ivan
-#      if: github.ref == 'refs/heads/main' && job.status == 'success'
-#      run: |
-#        git remote add heroku https://heroku:$HEROKU_API_TOKEN@git.heroku.com/$HEROKU_APP_NAME.git
-#        heroku config:set DISABLE_COLLECTSTATIC=1 -a $HEROKU_APP_NAME
-#        git push heroku HEAD:main -f
-#        heroku run python manage.py migrate -a warehouse-ivan
+    - name: Run API Tests
+      id: run-newman
+      uses: anthonyvscode/newman-action@v1
+      with:
+        collection: postman/postman-collection.json
+        environment: postman/postman-heroku-environment.json
+        delayRequest: 60
+        reporters: cli
