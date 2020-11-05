@@ -57,7 +57,7 @@ jobs:
         heroku_app_name: orders-ivan
         heroku_email: Chernov-Ivan.1997@yandex.ru
         appdir: order_service
-    - name: Migrate Orders
+    - name: Migrate Store
       run: |
         cd store_service/
         python3 manage.py migrate

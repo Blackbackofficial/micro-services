@@ -10,10 +10,10 @@ import requests
 @api_view(['GET'])
 def get_orders(request, user_uid):
     if validUser(user_uid):
-        storeReq = requests.get('http://127.0.0.1:8100/api/v1/orders/{}'.format(user_uid)).json()
+        storeReq = requests.get('https://orders-ivan.herokuapp.com/api/v1/orders/{}'.format(user_uid)).json()
         for item in storeReq:
-            warrantyResp = requests.get('http://127.0.0.1:8200/api/v1/warranty/{}'.format(item['itemUid'])).json()
-            warehouseResp = requests.get('http://127.0.0.1:8300/api/v1/warehouse/{}'.format(item['itemUid'])).json()
+            warrantyResp = requests.get('https://warranty-ivan.herokuapp.com/api/v1/warranty/{}'.format(item['itemUid'])).json()
+            warehouseResp = requests.get('https://warehouse-ivan.herokuapp.com/api/v1/warehouse/{}'.format(item['itemUid'])).json()
             item.update(warrantyResp, **warehouseResp)
         storeReq = filter_response(storeReq)
         return JsonResponse(storeReq, status=status.HTTP_200_OK, safe=False)
@@ -23,10 +23,10 @@ def get_orders(request, user_uid):
 @api_view(['GET'])
 def get_order(request, user_uid, order_uid):
     if validUser(user_uid):
-        storeReq = requests.get('http://127.0.0.1:8100/api/v1/orders/{user_uid}/{order_uid}'.format(
+        storeReq = requests.get('https://orders-ivan.herokuapp.com/api/v1/orders/{user_uid}/{order_uid}'.format(
             user_uid=user_uid, order_uid=order_uid)).json()
-        warrantyResp = requests.get('http://127.0.0.1:8200/api/v1/warranty/{}'.format(storeReq['itemUid'])).json()
-        warehouseResp = requests.get('http://127.0.0.1:8300/api/v1/warehouse/{}'.format(storeReq['itemUid'])).json()
+        warrantyResp = requests.get('https://warranty-ivan.herokuapp.com/api/v1/warranty/{}'.format(storeReq['itemUid'])).json()
+        warehouseResp = requests.get('https://warehouse-ivan.herokuapp.com/api/v1/warehouse/{}'.format(storeReq['itemUid'])).json()
         storeReq.update(warrantyResp, **warehouseResp)  # через дополнительные параметры конструктора типа
         storeReq = filter_response(storeReq)
         return JsonResponse(storeReq, status=status.HTTP_200_OK)
@@ -36,11 +36,11 @@ def get_order(request, user_uid, order_uid):
 @api_view(['POST'])
 def purchase_order(request, user_uid):
     if validUser(user_uid):
-        orderResp = requests.post('http://127.0.0.1:8100/api/v1/orders/{}'.format(user_uid), json=request.data)
+        orderResp = requests.post('https://orders-ivan.herokuapp.com/api/v1/orders/{}'.format(user_uid), json=request.data)
         if orderResp.status_code == 200:
             orderResp = orderResp.json()
             response = JsonResponse(1, status=status.HTTP_201_CREATED, safe=False)
-            response['Location'] = 'http://127.0.0.1:8100/api/v1/orders/{user_uid}/purchase/{order_uid}'.format(
+            response['Location'] = 'https://orders-ivan.herokuapp.com/api/v1/orders/{user_uid}/purchase/{order_uid}'.format(
                 user_uid=user_uid, order_uid=orderResp["orderUid"])
             return response
         JsonResponse({'message': 'Item not available'}, status=status.HTTP_409_CONFLICT)
@@ -50,7 +50,7 @@ def purchase_order(request, user_uid):
 @api_view(['POST'])
 def get_order_warranty(request, user_uid, order_uid):
     if validUser(user_uid):
-        storeReq = requests.post('http://127.0.0.1:8100/api/v1/orders/{}/warranty'.format(order_uid), json=request.data).json()
+        storeReq = requests.post('https://orders-ivan.herokuapp.com/api/v1/orders/{}/warranty'.format(order_uid), json=request.data).json()
         storeReq.update({'orderUid': order_uid})
         return JsonResponse(storeReq, status=status.HTTP_200_OK)
     return JsonResponse({'message': 'The tutorial does not exist or No Content'}, status=status.HTTP_404_NOT_FOUND)
@@ -59,7 +59,7 @@ def get_order_warranty(request, user_uid, order_uid):
 @api_view(['DELETE'])
 def get_order_refund(request, user_uid, order_uid):
     if validUser(user_uid):
-        storeReq = requests.delete('http://127.0.0.1:8100/api/v1/orders/{}'.format(order_uid))
+        storeReq = requests.delete('https://orders-ivan.herokuapp.com/api/v1/orders/{}'.format(order_uid))
         if storeReq.status_code == 404:
             storeReq = storeReq.json()
             return JsonResponse(storeReq, status=status.HTTP_404_NOT_FOUND, safe=False)
