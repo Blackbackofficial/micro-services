@@ -14,9 +14,10 @@ def post_items(request):
     try:
         instData = instItem = Items.objects.get(model=parseDict['model'])
         instData = ItemSerializer(instData).data
-        instData['available_count'] -= 1
+
         if instData['available_count'] == 0:
             return JsonResponse({'message': 'Item not available'}, status=status.HTTP_409_CONFLICT)
+        instData['available_count'] -= 1
         req_serializer = ItemSerializer(instance=instItem, data=instData)
         if req_serializer.is_valid():
             req_serializer.save()
