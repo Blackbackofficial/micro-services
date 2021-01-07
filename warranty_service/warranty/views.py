@@ -16,12 +16,13 @@ def actions_warranty(request, item_uid):
             if warranty_serializer.is_valid():
                 warranty_serializer.save()
                 return JsonResponse(1, status=status.HTTP_204_NO_CONTENT, safe=False)
-        if valid_warranty(item_uid):
-            if request.method == 'GET':
+        if request.method == 'GET':
+            if valid_warranty(item_uid):
                 warranty = valid_warranty(item_uid)
                 filterRes = filter_response(warranty)
                 return JsonResponse(filterRes, status=status.HTTP_200_OK, safe=False)
-            if request.method == 'DELETE':
+        if request.method == 'DELETE':
+            if valid_warranty(item_uid):
                 warrantyDelete = valid_warranty(item_uid)
                 warrantyDelete.delete()
                 return JsonResponse(1, status=status.HTTP_204_NO_CONTENT, safe=False)
@@ -78,6 +79,6 @@ def valid_warranty(item_uid):
 def regularExp(request):
     availableCount = '^[0-9]+$'
     reason = '^[A-Z][a-z 0-9]+$'
-    if (re.match(availableCount, request.get("availableCount")) and re.match(reason, request.get("reason"))) is not None:
+    if (re.match(availableCount, str(request.get("availableCount"))) and re.match(reason, request.get("reason"))) is not None:
         return True
     return False
