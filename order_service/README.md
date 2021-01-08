@@ -2,11 +2,11 @@
 
 ## Описание API
 1. `GET /manage/health` – Swagger API;
-1. `POST /api/v1/orders/{userUid}` – сделать заказ от имени пользователя;
-1. `GET /api/v1/orders/{userUid}/{orderUid}` – получить информацию по конкретному заказу пользователя;
-1. `GET /api/v1/orders/{userUid}` – получить все заказы пользователя;
-1. `POST /api/v1/orders/{orderUid}/warranty` – запрос гарантии по заказу;
-1. `DELETE /api/v1/orders/{orderUid}` – вернуть заказ.
+1. `POST /api/v1/self/{userUid}` – сделать заказ от имени пользователя;
+1. `GET /api/v1/self/{userUid}/{orderUid}` – получить информацию по конкретному заказу пользователя;
+1. `GET /api/v1/self/{userUid}` – получить все заказы пользователя;
+1. `POST /api/v1/self/{orderUid}/warranty` – запрос гарантии по заказу;
+1. `DELETE /api/v1/self/{orderUid}` – вернуть заказ.
 
 
 ## Логика работы
@@ -15,7 +15,7 @@
 
 ## Структура таблиц
 ```postgresql
-CREATE TABLE orders
+CREATE TABLE self
 (
     id         SERIAL CONSTRAINT orders_pkey PRIMARY KEY,
     item_uid   UUID         NOT NULL,
