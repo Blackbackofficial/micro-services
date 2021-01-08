@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.decorators import api_view
-from .functions import pingServices, validate_uuid4, validUser, filter_response, regularExp
+from .functions import FunctionsStore
 import requests
 
 
@@ -14,14 +14,15 @@ def get_orders(request, user_uid):
     :param user_uid: User Uid
     :return: storeReq (data)
     """
+
     try:
-        if not pingServices():
+        if not FunctionsStore.pingServices():
             return JsonResponse({'message': 'Server Orders/Warranty/Warehouse close'}, status=status.HTTP_404_NOT_FOUND)
 
-        elif validate_uuid4(user_uid) is False:
+        elif FunctionsStore.validate_uuid4(user_uid) is False:
             return JsonResponse({'message': 'Is not a valid UUID'}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-        elif validUser(user_uid):
+        elif FunctionsStore.validUser(user_uid):
             storeReq = requests.get('https://orders-ivan.herokuapp.com/api/v1/orders/{}'.format(user_uid)).json()
             for item in storeReq:
                 warrantyResp = requests.get(
@@ -29,7 +30,7 @@ def get_orders(request, user_uid):
                 warehouseResp = requests.get(
                     'https://warehouse-ivan.herokuapp.com/api/v1/warehouse/{}'.format(item['itemUid'])).json()
                 item.update(warrantyResp, **warehouseResp)
-            storeReq = filter_response(storeReq)
+            storeReq = FunctionsStore.filter_response(storeReq)
             return JsonResponse(storeReq, status=status.HTTP_200_OK, safe=False)
         return JsonResponse({'message': 'The tutorial does not exist or No Content'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
@@ -45,14 +46,15 @@ def get_order(request, user_uid, order_uid):
     :param order_uid: Order Uid
     :return: storeReq (data)
     """
+
     try:
-        if not pingServices():
+        if not FunctionsStore.pingServices():
             return JsonResponse({'message': 'Server Orders/Warranty/Warehouse close'}, status=status.HTTP_404_NOT_FOUND)
 
-        elif (validate_uuid4(user_uid) and validate_uuid4(order_uid)) is False:
+        elif (FunctionsStore.validate_uuid4(user_uid) and FunctionsStore.validate_uuid4(order_uid)) is False:
             return JsonResponse({'message': 'Is not a valid UUID'}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-        elif validUser(user_uid):
+        elif FunctionsStore.validUser(user_uid):
             storeReq = requests.get('https://orders-ivan.herokuapp.com/api/v1/orders/{user_uid}/{order_uid}'.format(
                 user_uid=user_uid, order_uid=order_uid)).json()
             if 'message' in storeReq:
@@ -62,7 +64,7 @@ def get_order(request, user_uid, order_uid):
             warehouseResp = requests.get(
                 'https://warehouse-ivan.herokuapp.com/api/v1/warehouse/{}'.format(storeReq['itemUid'])).json()
             storeReq.update(warrantyResp, **warehouseResp)  # через дополнительные параметры конструктора типа
-            storeReq = filter_response(storeReq)
+            storeReq = FunctionsStore.filter_response(storeReq)
             return JsonResponse(storeReq, status=status.HTTP_200_OK)
         return JsonResponse({'message': 'The tutorial does not exist or No Content'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
@@ -77,16 +79,17 @@ def purchase_order(request, user_uid):
     :param user_uid: User Uid
     :return: in Header ['Location'] + Susses(1, status 201) or not
     """
+
     try:
-        if not pingServices():
+        if not FunctionsStore.pingServices():
             return JsonResponse({'message': 'Server Orders/Warranty/Warehouse close'}, status=status.HTTP_404_NOT_FOUND)
 
-        elif validate_uuid4(user_uid) is False:
+        elif FunctionsStore.validate_uuid4(user_uid) is False:
             return JsonResponse({'message': 'Is not a valid UUID'}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-        elif validUser(user_uid):
+        elif FunctionsStore.validUser(user_uid):
             if len(request.data) <= 2 and ('model' and 'size') in request.data:
-                if regularExp(request.data) is False:
+                if FunctionsStore.regularExp(request.data) is False:
                     return JsonResponse({'message': 'No valid model or size'}, status=status.HTTP_406_NOT_ACCEPTABLE)
                 orderResp = requests.post('https://orders-ivan.herokuapp.com/api/v1/orders/{}'
                                           .format(user_uid), json=request.data)
@@ -114,14 +117,15 @@ def get_order_warranty(request, user_uid, order_uid):
     :param order_uid: Order Uid
     :return: storeReq (data with warranty, status 200)
     """
+
     try:
-        if not pingServices():
+        if not FunctionsStore.pingServices():
             return JsonResponse({'message': 'Server Orders/Warranty/Warehouse close'}, status=status.HTTP_404_NOT_FOUND)
 
-        elif (validate_uuid4(user_uid) and validate_uuid4(order_uid)) is False:
+        elif (FunctionsStore.validate_uuid4(user_uid) and FunctionsStore.validate_uuid4(order_uid)) is False:
             return JsonResponse({'message': 'Is not a valid UUID'}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-        elif validUser(user_uid):
+        elif FunctionsStore.validUser(user_uid):
             storeReq = requests.post('https://orders-ivan.herokuapp.com/api/v1/orders/{}/warranty'.format(order_uid),
                                      json=request.data).json()
             storeReq.update({'orderUid': order_uid})
@@ -140,14 +144,15 @@ def get_order_refund(request, user_uid, order_uid):
     :param order_uid: Order Uid
     :return: Susses(1, status 201) or not
     """
+
     try:
-        if not pingServices():
+        if not FunctionsStore.pingServices():
             return JsonResponse({'message': 'Server Orders/Warranty/Warehouse close'}, status=status.HTTP_404_NOT_FOUND)
 
-        elif (validate_uuid4(user_uid) and validate_uuid4(order_uid)) is False:
+        elif (FunctionsStore.validate_uuid4(user_uid) and FunctionsStore.validate_uuid4(order_uid)) is False:
             return JsonResponse({'message': 'Is not a valid UUID'}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-        elif validUser(user_uid):
+        elif FunctionsStore.validUser(user_uid):
             storeReq = requests.delete('https://orders-ivan.herokuapp.com/api/v1/orders/{}'.format(order_uid))
             if storeReq.status_code == 404:
                 storeReq = storeReq.json()
