@@ -1,7 +1,7 @@
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.decorators import api_view
-from .functios import pingServices, validate_uuid4, validUser, filter_response, regularExp
+from .functions import pingServices, validate_uuid4, validUser, filter_response, regularExp
 import requests
 
 
