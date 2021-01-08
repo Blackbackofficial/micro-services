@@ -13,7 +13,7 @@ import re
 @api_view(['POST'])
 def post_items(request):
     try:
-        if len(request.data) <= 3 and ('model' and 'size' and 'orderUid') in request.data:
+        if len(request.data) <= 4 and ('model' and 'size' and 'orderUid') in request.data:
             parseDict = request.data
             if regularExp(parseDict, 1) is False:
                 return JsonResponse({'message': 'Error validation model/size'}, status=status.HTTP_406_NOT_ACCEPTABLE)
