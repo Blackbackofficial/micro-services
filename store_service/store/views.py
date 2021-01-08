@@ -11,8 +11,10 @@ def get_orders(request, user_uid):
     try:
         if not pingServices():
             return JsonResponse({'message': 'Server Orders/Warranty/Warehouse close'}, status=status.HTTP_404_NOT_FOUND)
+
         elif validate_uuid4(user_uid) is False:
             return JsonResponse({'message': 'Is not a valid UUID'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
         elif validUser(user_uid):
             storeReq = requests.get('https://orders-ivan.herokuapp.com/api/v1/orders/{}'.format(user_uid)).json()
             for item in storeReq:
@@ -33,14 +35,15 @@ def get_order(request, user_uid, order_uid):
     try:
         if not pingServices():
             return JsonResponse({'message': 'Server Orders/Warranty/Warehouse close'}, status=status.HTTP_404_NOT_FOUND)
+
         elif (validate_uuid4(user_uid) and validate_uuid4(order_uid)) is False:
             return JsonResponse({'message': 'Is not a valid UUID'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
         elif validUser(user_uid):
-            storeReq = requests.get('https://orders-ivan.herokuapp.com/api/v1/orders/{user_uid}/{order_uid}'.format(
+            storeReq = requests.get('https://orders-ivan.herokuapphiu.com/api/v1/orders/{user_uid}/{order_uid}'.format(
                 user_uid=user_uid, order_uid=order_uid)).json()
             if 'message' in storeReq:
-                return JsonResponse({'message': '{}'.format(storeReq.get('message'))},
-                                    status=status.HTTP_400_BAD_REQUEST)
+                return JsonResponse({'message': '{}'.format(storeReq["message"])}, status=status.HTTP_400_BAD_REQUEST)
             warrantyResp = requests.get(
                 'https://warranty-ivan.herokuapp.com/api/v1/warranty/{}'.format(storeReq['itemUid'])).json()
             warehouseResp = requests.get(
@@ -58,13 +61,14 @@ def purchase_order(request, user_uid):
     try:
         if not pingServices():
             return JsonResponse({'message': 'Server Orders/Warranty/Warehouse close'}, status=status.HTTP_404_NOT_FOUND)
+
         elif validate_uuid4(user_uid) is False:
             return JsonResponse({'message': 'Is not a valid UUID'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
         elif validUser(user_uid):
             if len(request.data) <= 2 and ('model' and 'size') in request.data:
                 if regularExp(request.data) is False:
-                    return JsonResponse({'message': 'Error validation model or size'},
-                                        status=status.HTTP_406_NOT_ACCEPTABLE)
+                    return JsonResponse({'message': 'No valid model or size'}, status=status.HTTP_406_NOT_ACCEPTABLE)
                 orderResp = requests.post('https://orders-ivan.herokuapp.com/api/v1/orders/{}'
                                           .format(user_uid), json=request.data)
                 if orderResp.status_code == 200:
@@ -87,8 +91,10 @@ def get_order_warranty(request, user_uid, order_uid):
     try:
         if not pingServices():
             return JsonResponse({'message': 'Server Orders/Warranty/Warehouse close'}, status=status.HTTP_404_NOT_FOUND)
+
         elif (validate_uuid4(user_uid) and validate_uuid4(order_uid)) is False:
             return JsonResponse({'message': 'Is not a valid UUID'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
         elif validUser(user_uid):
             storeReq = requests.post('https://orders-ivan.herokuapp.com/api/v1/orders/{}/warranty'.format(order_uid),
                                      json=request.data).json()
@@ -104,8 +110,10 @@ def get_order_refund(request, user_uid, order_uid):
     try:
         if not pingServices():
             return JsonResponse({'message': 'Server Orders/Warranty/Warehouse close'}, status=status.HTTP_404_NOT_FOUND)
+
         elif (validate_uuid4(user_uid) and validate_uuid4(order_uid)) is False:
             return JsonResponse({'message': 'Is not a valid UUID'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
         elif validUser(user_uid):
             storeReq = requests.delete('https://orders-ivan.herokuapp.com/api/v1/orders/{}'.format(order_uid))
             if storeReq.status_code == 404:
