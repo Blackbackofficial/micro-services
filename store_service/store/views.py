@@ -71,6 +71,7 @@ def purchase_order(request, user_uid):
                 if regularExp(request.data) is False:
                     return JsonResponse({'message': 'Error validation model or size'},
                                         status=status.HTTP_406_NOT_ACCEPTABLE)
+                # надо подумать
                 orderResp = requests.post('https://orders-ivan.herokuapp.com/api/v1/orders/{}'
                                           .format(user_uid), json=request.data)
                 if orderResp.status_code == 200:

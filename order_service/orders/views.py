@@ -33,6 +33,7 @@ def actions_orders(request, user_uid):
                 {'orderUid': order_serializer.data["order_uid"], 'orderItemUid': order_serializer.data["item_uid"]})
             warrantyResp = requests.post(
                 'https://warranty-ivan.herokuapp.com/api/v1/warranty/{}'.format(order_serializer.data["item_uid"]))
+            # надо подумать
             warehouseResp = requests.post('https://warehouse-ivan.herokuapp.com/api/v1/warehouse/', json=parseDict)
             if warrantyResp.status_code == 204 and warehouseResp.status_code == 200:
                 return JsonResponse({"orderUid": order_serializer.data["order_uid"]}, status=status.HTTP_200_OK)
