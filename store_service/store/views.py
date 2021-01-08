@@ -1,14 +1,8 @@
-from urllib.error import HTTPError
-from uuid import UUID
-
-from django.core.exceptions import ValidationError
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.decorators import api_view
-from .models import Store
-from urllib.request import urlopen
+from .functios import pingServices, validate_uuid4, validUser, filter_response, regularExp
 import requests
-import re
 
 
 # API
@@ -17,8 +11,10 @@ def get_orders(request, user_uid):
     try:
         if not pingServices():
             return JsonResponse({'message': 'Server Orders/Warranty/Warehouse close'}, status=status.HTTP_404_NOT_FOUND)
+
         elif validate_uuid4(user_uid) is False:
             return JsonResponse({'message': 'Is not a valid UUID'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
         elif validUser(user_uid):
             storeReq = requests.get('https://orders-ivan.herokuapp.com/api/v1/orders/{}'.format(user_uid)).json()
             for item in storeReq:
@@ -39,14 +35,15 @@ def get_order(request, user_uid, order_uid):
     try:
         if not pingServices():
             return JsonResponse({'message': 'Server Orders/Warranty/Warehouse close'}, status=status.HTTP_404_NOT_FOUND)
+
         elif (validate_uuid4(user_uid) and validate_uuid4(order_uid)) is False:
             return JsonResponse({'message': 'Is not a valid UUID'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
         elif validUser(user_uid):
-            storeReq = requests.get('https://orders-ivan.herokuapp.com/api/v1/orders/{user_uid}/{order_uid}'.format(
+            storeReq = requests.get('https://orders-ivan.herokuapphiu.com/api/v1/orders/{user_uid}/{order_uid}'.format(
                 user_uid=user_uid, order_uid=order_uid)).json()
             if 'message' in storeReq:
-                return JsonResponse({'message': '{}'.format(storeReq.get('message'))},
-                                    status=status.HTTP_400_BAD_REQUEST)
+                return JsonResponse({'message': '{}'.format(storeReq["message"])}, status=status.HTTP_400_BAD_REQUEST)
             warrantyResp = requests.get(
                 'https://warranty-ivan.herokuapp.com/api/v1/warranty/{}'.format(storeReq['itemUid'])).json()
             warehouseResp = requests.get(
@@ -64,14 +61,14 @@ def purchase_order(request, user_uid):
     try:
         if not pingServices():
             return JsonResponse({'message': 'Server Orders/Warranty/Warehouse close'}, status=status.HTTP_404_NOT_FOUND)
+
         elif validate_uuid4(user_uid) is False:
             return JsonResponse({'message': 'Is not a valid UUID'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
         elif validUser(user_uid):
             if len(request.data) <= 2 and ('model' and 'size') in request.data:
                 if regularExp(request.data) is False:
-                    return JsonResponse({'message': 'Error validation model or size'},
-                                        status=status.HTTP_406_NOT_ACCEPTABLE)
-                # надо подумать
+                    return JsonResponse({'message': 'No valid model or size'}, status=status.HTTP_406_NOT_ACCEPTABLE)
                 orderResp = requests.post('https://orders-ivan.herokuapp.com/api/v1/orders/{}'
                                           .format(user_uid), json=request.data)
                 if orderResp.status_code == 200:
@@ -94,8 +91,10 @@ def get_order_warranty(request, user_uid, order_uid):
     try:
         if not pingServices():
             return JsonResponse({'message': 'Server Orders/Warranty/Warehouse close'}, status=status.HTTP_404_NOT_FOUND)
+
         elif (validate_uuid4(user_uid) and validate_uuid4(order_uid)) is False:
             return JsonResponse({'message': 'Is not a valid UUID'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
         elif validUser(user_uid):
             storeReq = requests.post('https://orders-ivan.herokuapp.com/api/v1/orders/{}/warranty'.format(order_uid),
                                      json=request.data).json()
@@ -111,8 +110,10 @@ def get_order_refund(request, user_uid, order_uid):
     try:
         if not pingServices():
             return JsonResponse({'message': 'Server Orders/Warranty/Warehouse close'}, status=status.HTTP_404_NOT_FOUND)
+
         elif (validate_uuid4(user_uid) and validate_uuid4(order_uid)) is False:
             return JsonResponse({'message': 'Is not a valid UUID'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
         elif validUser(user_uid):
             storeReq = requests.delete('https://orders-ivan.herokuapp.com/api/v1/orders/{}'.format(order_uid))
             if storeReq.status_code == 404:
@@ -122,55 +123,3 @@ def get_order_refund(request, user_uid, order_uid):
         return JsonResponse({'message': 'The tutorial does not exist or No Content'}, status=status.HTTP_404_NOT_FOUND)
     except Exception as e:
         return JsonResponse({'message': '{}'.format(e)}, status=status.HTTP_400_BAD_REQUEST)
-
-
-# Support function
-def filter_response(storeReq):
-    if type(storeReq) is dict:
-        storeReq['date'] = storeReq['orderDate']
-        storeReq['warrantyStatus'] = storeReq['status']
-        del storeReq['itemUid'], storeReq['status'], storeReq['orderDate'], storeReq['id'], storeReq['available_count']
-    else:
-        for item in storeReq:
-            if 'date' and 'warrantyStatus' and 'itemUid' in item:
-                item['date'] = item['orderDate']
-                item['warrantyStatus'] = item['status']
-                del item['itemUid'], item['status'], item['orderDate']
-            if 'id' in item:
-                del item['id']
-            if 'available_count' in item:
-                del item['available_count']
-    return storeReq
-
-
-def validUser(user_uid):
-    try:
-        return Store.objects.get(user_uid=user_uid)
-    except ValidationError:
-        return False
-
-
-def regularExp(request):
-    model = '^[A-Z]+[a-z 0-9]+$'
-    size = '^[A-Z]+$'
-    if (re.match(model, request.get("model")) and re.match(size, request.get("size"))) is not None:
-        return True
-    return False
-
-
-def pingServices():
-    try:
-        urlopen("https://warranty-ivan.herokuapp.com/manage/health/")
-        urlopen("https://warehouse-ivan.herokuapp.com/manage/health/")
-        urlopen('https://orders-ivan.herokuapp.com/manage/health/')
-        return True
-    except HTTPError:
-        return False
-
-
-def validate_uuid4(uuid_string):
-    try:
-        UUID(uuid_string, version=4)
-    except ValueError:
-        return False
-    return True
