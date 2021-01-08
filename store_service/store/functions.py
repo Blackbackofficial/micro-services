@@ -11,8 +11,9 @@ import re
 
 def filter_response(storeReq):
     """
-    Sorts the response, removes unnecessary data. Two exits when a specific user order
-    and when all user orders, always returns storeReq
+    Sorts the response, removes unnecessary data. Two exits when a specific user order and when all user orders.
+    :param storeReq: dict one user order or all user orders
+    :return: storeReq
     """
     if type(storeReq) is dict:
         storeReq['date'] = storeReq['orderDate']
@@ -33,7 +34,9 @@ def filter_response(storeReq):
 
 def validUser(user_uid):
     """
-    Check for existence User Uid, return user_uid or False
+    Check for existence User Uid.
+    :param user_uid: User Uid
+    :return: user_uid or False
     """
     try:
         return Store.objects.get(user_uid=user_uid)
@@ -44,6 +47,8 @@ def validUser(user_uid):
 def regularExp(request):
     """
     Validation of data from JSON(request) using a pattern from regular expressions
+    :param request: from function in JSON(request)
+    :return: True or False
     """
     model = '^[A-Z]+[a-z 0-9]+$'
     size = '^[A-Z]+$'
@@ -54,7 +59,8 @@ def regularExp(request):
 
 def pingServices():
     """
-    Checking the health of other services, return True or False
+    Checking the health of other services.
+    :return: True or False
     """
     try:
         urlopen("https://warranty-ivan.herokuapp.com/manage/health/")
@@ -67,7 +73,9 @@ def pingServices():
 
 def validate_uuid4(uuid_string):
     """
-    Validation uuid from string URL or in JSON, return True or False
+    Validation uuid from string URL or in JSON.
+    :param uuid_string: User or Order Uid
+    :return: True or False
     """
     try:
         UUID(uuid_string, version=4)

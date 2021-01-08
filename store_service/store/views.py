@@ -1,13 +1,19 @@
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.decorators import api_view
-from .functios import pingServices, validate_uuid4, validUser, filter_response, regularExp
+from .functions import pingServices, validate_uuid4, validUser, filter_response, regularExp
 import requests
 
 
 # API
 @api_view(['GET'])
 def get_orders(request, user_uid):
+    """
+    GET /api/v1/store/{userUid}/orders - get a list of user's orders
+    :param request: none used
+    :param user_uid: User Uid
+    :return: storeReq (data)
+    """
     try:
         if not pingServices():
             return JsonResponse({'message': 'Server Orders/Warranty/Warehouse close'}, status=status.HTTP_404_NOT_FOUND)
@@ -32,6 +38,13 @@ def get_orders(request, user_uid):
 
 @api_view(['GET'])
 def get_order(request, user_uid, order_uid):
+    """
+    GET /api/v1/store/{userUid}/{orderUid} – information on a specific(user_uid, order_uid) order.
+    :param request: none used
+    :param user_uid: User Uid
+    :param order_uid: Order Uid
+    :return: storeReq (data)
+    """
     try:
         if not pingServices():
             return JsonResponse({'message': 'Server Orders/Warranty/Warehouse close'}, status=status.HTTP_404_NOT_FOUND)
@@ -40,7 +53,7 @@ def get_order(request, user_uid, order_uid):
             return JsonResponse({'message': 'Is not a valid UUID'}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
         elif validUser(user_uid):
-            storeReq = requests.get('https://orders-ivan.herokuapphiu.com/api/v1/orders/{user_uid}/{order_uid}'.format(
+            storeReq = requests.get('https://orders-ivan.herokuapp.com/api/v1/orders/{user_uid}/{order_uid}'.format(
                 user_uid=user_uid, order_uid=order_uid)).json()
             if 'message' in storeReq:
                 return JsonResponse({'message': '{}'.format(storeReq["message"])}, status=status.HTTP_400_BAD_REQUEST)
@@ -58,6 +71,12 @@ def get_order(request, user_uid, order_uid):
 
 @api_view(['POST'])
 def purchase_order(request, user_uid):
+    """
+    POST /api/v1/store/{userUid}/purchase – complete purchase
+    :param request: JSON hidden in the data
+    :param user_uid: User Uid
+    :return: in Header ['Location'] + Susses(1, status 201) or not
+    """
     try:
         if not pingServices():
             return JsonResponse({'message': 'Server Orders/Warranty/Warehouse close'}, status=status.HTTP_404_NOT_FOUND)
@@ -88,6 +107,13 @@ def purchase_order(request, user_uid):
 
 @api_view(['POST'])
 def get_order_warranty(request, user_uid, order_uid):
+    """
+    POST /api/v1/store/{userUid}/{orderUid}/warranty – order warranty request;
+    :param request: used to send data to the warranty service
+    :param user_uid: User Uid
+    :param order_uid: Order Uid
+    :return: storeReq (data with warranty, status 200)
+    """
     try:
         if not pingServices():
             return JsonResponse({'message': 'Server Orders/Warranty/Warehouse close'}, status=status.HTTP_404_NOT_FOUND)
@@ -107,6 +133,13 @@ def get_order_warranty(request, user_uid, order_uid):
 
 @api_view(['DELETE'])
 def get_order_refund(request, user_uid, order_uid):
+    """
+    DELETE /api/v1/store/{userUid}/{orderUid}/refund – return order;
+    :param request: none used
+    :param user_uid: User Uid
+    :param order_uid: Order Uid
+    :return: Susses(1, status 201) or not
+    """
     try:
         if not pingServices():
             return JsonResponse({'message': 'Server Orders/Warranty/Warehouse close'}, status=status.HTTP_404_NOT_FOUND)
