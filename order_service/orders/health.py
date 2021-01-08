@@ -6,6 +6,10 @@ from django.db import connection
 
 
 class HealthCheckCustom(View):
+    """
+    Support function for health check
+    """
+
     def get(self, *args, **kwargs):
         utc_time = datetime.now(timezone.utc)
         local_time = utc_time.astimezone()
