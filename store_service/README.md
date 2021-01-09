@@ -4,7 +4,7 @@
 1. `GET /manage/health` – Swagger API;
 1. `GET /api/v1/store/{userUid}/self` – получить список заказов пользователя;
 1. `GET /api/v1/store/{userUid}/{orderUid}` – информация по конкретному заказу;
-1. `POST /api/v1/store/{userUid}/{orderUid}/warranty` – запрос гарантии по заказу;
+1. `POST /api/v1/store/{userUid}/{orderUid}/self` – запрос гарантии по заказу;
 1. `POST /api/v1/store/{userUid}/purchase` – выполнить покупку;
 1. `DELETE /api/v1/store/{userUid}/{orderUid}/refund` – вернуть заказ;
 
