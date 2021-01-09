@@ -1,3 +1,4 @@
+from circuitbreaker import circuit
 from rest_framework.decorators import api_view
 from rest_framework.parsers import JSONParser
 from .functions import FunctionsWarehouse
@@ -7,8 +8,12 @@ from django.http import JsonResponse
 from rest_framework import status
 import requests
 
+FAILURES = 3
+TIMEOUT = 6
+
 
 # API
+@circuit(failure_threshold=FAILURES, recovery_timeout=TIMEOUT)
 @api_view(['POST'])
 def post_items(request):
     """
@@ -55,6 +60,7 @@ def post_items(request):
         return JsonResponse({'message': '{}'.format(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+@circuit(failure_threshold=FAILURES, recovery_timeout=TIMEOUT)
 @api_view(['POST'])
 def request_warranty(request, orderItemUid):
     """
@@ -83,6 +89,7 @@ def request_warranty(request, orderItemUid):
         return JsonResponse({'message': '{}'.format(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+@circuit(failure_threshold=FAILURES, recovery_timeout=TIMEOUT)
 @api_view(['GET', 'DELETE'])
 def request_items(request, orderItemUid):
     """

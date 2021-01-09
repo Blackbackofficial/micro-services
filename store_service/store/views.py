@@ -1,11 +1,16 @@
+from circuitbreaker import circuit
 from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.decorators import api_view
 from .functions import FunctionsStore
 import requests
 
+FAILURES = 3
+TIMEOUT = 6
+
 
 # API
+@circuit(failure_threshold=FAILURES, recovery_timeout=TIMEOUT)
 @api_view(['GET'])
 def get_orders(request, user_uid):
     """
@@ -37,6 +42,7 @@ def get_orders(request, user_uid):
         return JsonResponse({'message': '{}'.format(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+@circuit(failure_threshold=FAILURES, recovery_timeout=TIMEOUT)
 @api_view(['GET'])
 def get_order(request, user_uid, order_uid):
     """
@@ -71,6 +77,7 @@ def get_order(request, user_uid, order_uid):
         return JsonResponse({'message': '{}'.format(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+@circuit(failure_threshold=FAILURES, recovery_timeout=TIMEOUT)
 @api_view(['POST'])
 def purchase_order(request, user_uid):
     """
@@ -108,6 +115,7 @@ def purchase_order(request, user_uid):
         return JsonResponse({'message': '{}'.format(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+@circuit(failure_threshold=FAILURES, recovery_timeout=TIMEOUT)
 @api_view(['POST'])
 def get_order_warranty(request, user_uid, order_uid):
     """
@@ -135,6 +143,7 @@ def get_order_warranty(request, user_uid, order_uid):
         return JsonResponse({'message': '{}'.format(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+@circuit(failure_threshold=FAILURES, recovery_timeout=TIMEOUT)
 @api_view(['DELETE'])
 def get_order_refund(request, user_uid, order_uid):
     """

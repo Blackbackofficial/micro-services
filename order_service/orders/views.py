@@ -1,3 +1,4 @@
+from circuitbreaker import circuit
 from rest_framework.parsers import JSONParser
 from .functions import FunctionsOrders
 from .models import Orders
@@ -7,7 +8,12 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 import requests
 
+FAILURES = 3
+TIMEOUT = 6
 
+
+# API
+@circuit(failure_threshold=FAILURES, recovery_timeout=TIMEOUT)
 @api_view(['GET', 'POST', 'DELETE'])
 def actions_orders(request, user_uid):
     """
@@ -67,6 +73,7 @@ def actions_orders(request, user_uid):
         return JsonResponse({'message': '{}'.format(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+@circuit(failure_threshold=FAILURES, recovery_timeout=TIMEOUT)
 @api_view(['GET'])
 def one_order(request, user_uid, order_uid):
     """
@@ -88,6 +95,7 @@ def one_order(request, user_uid, order_uid):
         return JsonResponse({'message': '{}'.format(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 
+@circuit(failure_threshold=FAILURES, recovery_timeout=TIMEOUT)
 @api_view(['POST'])
 def warranty_order(request, order_uid):
     """
