@@ -1,4 +1,4 @@
-from circuitbreaker import circuit, CircuitBreakerMonitor
+from circuitbreaker import circuit
 from .functions import FunctionsWarranty
 from .serializers import WarrantySerializer
 from django.http import JsonResponse
@@ -57,14 +57,10 @@ def request_warranty(request, item_uid):
     """
 
     try:
-        q = CircuitBreakerMonitor.get_circuits()
-        i = CircuitBreakerMonitor.get_open()
-        w = CircuitBreakerMonitor.get_closed()
         if FunctionsWarranty.valid_warranty(item_uid):
             instWarranty = warrantyData = FunctionsWarranty.valid_warranty(item_uid)
             warrantyData = WarrantySerializer(warrantyData).data
             parseDict = request.data
-            str(parseDict) + 1
 
             if FunctionsWarranty.regularExp(parseDict) is False:
                 return JsonResponse({'message': 'Is not valid reason or count'}, status=status.HTTP_406_NOT_ACCEPTABLE)
