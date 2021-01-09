@@ -2,10 +2,10 @@
 
 ## Описание API
 1. `GET /manage/health` – Swagger API;
-1. `GET /api/v1/self/{itemUid}` – информация о статусе гарантии;
-2. `POST /api/v1/self/{itemUid}/self` – запрос решения по гарантии;
-3. `POST /api/v1/self/{itemUid}` – запрос на начало гарантийного периода;
-4. `DELETE /api/v1/self/{itemUid}` – запрос на закрытие гарантии.
+2. `GET /api/v1/self/{itemUid}` – информация о статусе гарантии;
+3. `POST /api/v1/self/{itemUid}/self` – запрос решения по гарантии;
+4. `POST /api/v1/self/{itemUid}` – запрос на начало гарантийного периода;
+5. `DELETE /api/v1/self/{itemUid}` – запрос на закрытие гарантии.
 
 
 ## Логика работы
