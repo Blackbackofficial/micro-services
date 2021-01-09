@@ -8,7 +8,7 @@ jobs:
     strategy:
       max-parallel: 4
       matrix:
-        python-version: [ 3.8 ]
+        python-version: [ 3.9 ]
     steps:
     - uses: actions/checkout@v2
     - run: |
@@ -25,10 +25,12 @@ jobs:
         pip install dj-database-url
         pip install -r warranty_service/requirements.txt
 
+
     - name: Migrate Warranty
       run: |
         cd warranty_service/
         python3 manage.py migrate
+
     - name: Deploy Warranty service
       uses: akhileshns/heroku-deploy@v3.4.6
       with:
@@ -37,10 +39,12 @@ jobs:
         heroku_email: Chernov-Ivan.1997@yandex.ru
         appdir: warranty_service
 
+
     - name: Migrate Warehouse
       run: |
         cd warehouse_service/
         python3 manage.py migrate
+
     - name: Deploy Warehouse service
       uses: akhileshns/heroku-deploy@v3.4.6
       with:
@@ -49,10 +53,12 @@ jobs:
         heroku_email: Chernov-Ivan.1997@yandex.ru
         appdir: warehouse_service
 
+
     - name: Migrate Orders
       run: |
         cd order_service/
         python3 manage.py migrate
+
     - name: Deploy Orders service
       uses: akhileshns/heroku-deploy@v3.4.6
       with:
@@ -60,10 +66,13 @@ jobs:
         heroku_app_name: orders-ivan
         heroku_email: Chernov-Ivan.1997@yandex.ru
         appdir: order_service
+
+
     - name: Migrate Store
       run: |
         cd store_service/
         python3 manage.py migrate
+
     - name: Deploy Store service
       uses: akhileshns/heroku-deploy@v3.4.6
       with:
@@ -71,6 +80,8 @@ jobs:
         heroku_app_name: store-ivan
         heroku_email: Chernov-Ivan.1997@yandex.ru
         appdir: store_service
+
+
     - name: Run API Tests
       id: run-newman
       uses: anthonyvscode/newman-action@v1
