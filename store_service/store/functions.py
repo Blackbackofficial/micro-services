@@ -26,6 +26,18 @@ class FunctionsStore:
         except HTTPError:
             return False
 
+    def pingDegradation(self):
+        """
+        Checking the health of other services.
+        :return: True or False
+        """
+
+        try:
+            urlopen('{}'.format(self))
+            return True
+        except HTTPError:
+            return False
+
     def filter_response(self):
         """
         Sorts the response, removes unnecessary data. Two exits when a specific user order and when all user orders.
@@ -33,10 +45,14 @@ class FunctionsStore:
         :return: reformed storeReq
         """
 
+        key = {'itemUid', 'status', 'orderDate', 'id', 'available_count'}
         if type(self) is dict:
             self['date'] = self['orderDate']
             self['warrantyStatus'] = self['status']
-            del self['itemUid'], self['status'], self['orderDate'], self['id'], self['available_count']
+            i = 0
+            for item in key:
+                if item in self.keys():
+                    del self[item]
         else:
             for item in self:
                 if 'date' and 'warrantyStatus' and 'itemUid' in item:
@@ -59,6 +75,8 @@ class FunctionsStore:
         try:
             return Store.objects.get(user_uid=self)
         except ValidationError:
+            return False
+        except Store.DoesNotExist:
             return False
 
     def regularExp(self):

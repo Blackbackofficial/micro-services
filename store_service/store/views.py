@@ -14,30 +14,38 @@ TIMEOUT = 6
 @api_view(['GET'])
 def get_orders(request, user_uid):
     """
-    GET /api/v1/store/{userUid}/orders - get a list of user's orders
+    GET /api/v1/store/{userUid}/orders - get a list of user's orders + add degradation of functionality services
     :param request: none used
     :param user_uid: User Uid
     :return: storeReq (data)
     """
 
     try:
-        if not FunctionsStore.pingServices():
-            return JsonResponse({'message': 'Server Orders/Warranty/Warehouse close'}, status=status.HTTP_404_NOT_FOUND)
+        if not FunctionsStore.pingDegradation('https://orders-ivan.herokuapp.com/manage/health/'):
+            return JsonResponse({'message': 'Server Orders close'}, status=status.HTTP_404_NOT_FOUND)
 
-        elif FunctionsStore.validate_uuid4(user_uid) is False:
+        if FunctionsStore.validate_uuid4(user_uid) is False:
             return JsonResponse({'message': 'Is not a valid UUID'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+        # ping to degradation of functionality services
+        pingWarranty = FunctionsStore.pingDegradation("https://warranty-ivan.herokuapp.com/manage/health/")
+        pingWarehouse = FunctionsStore.pingDegradation("https://warehouse-ivan.herokuapp.com/manage/health/")
 
-        elif FunctionsStore.validUser(user_uid):
-            storeReq = requests.get('https://orders-ivan.herokuapp.com/api/v1/orders/{}'.format(user_uid)).json()
-            for item in storeReq:
+        if not FunctionsStore.validUser(user_uid):
+            return JsonResponse({'message': 'The user does not exist or No Content'}, status=status.HTTP_404_NOT_FOUND)
+
+        storeReq = requests.get('https://orders-ivan.herokuapp.com/api/v1/orders/{}'.format(user_uid)).json()
+        warrantyResp = warehouseResp = {}
+        for item in storeReq:
+            if pingWarranty:
                 warrantyResp = requests.get(
                     'https://warranty-ivan.herokuapp.com/api/v1/warranty/{}'.format(item['itemUid'])).json()
+            if pingWarehouse:
                 warehouseResp = requests.get(
                     'https://warehouse-ivan.herokuapp.com/api/v1/warehouse/{}'.format(item['itemUid'])).json()
-                item.update(warrantyResp, **warehouseResp)
-            storeReq = FunctionsStore.filter_response(storeReq)
-            return JsonResponse(storeReq, status=status.HTTP_200_OK, safe=False)
-        return JsonResponse({'message': 'The tutorial does not exist or No Content'}, status=status.HTTP_404_NOT_FOUND)
+            item.update(warrantyResp, **warehouseResp)  # через дополнительные параметры конструктора типа
+
+        storeReq = FunctionsStore.filter_response(storeReq)
+        return JsonResponse(storeReq, status=status.HTTP_200_OK, safe=False)
     except Exception as e:
         return JsonResponse({'message': '{}'.format(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -54,25 +62,30 @@ def get_order(request, user_uid, order_uid):
     """
 
     try:
-        if not FunctionsStore.pingServices():
-            return JsonResponse({'message': 'Server Orders/Warranty/Warehouse close'}, status=status.HTTP_404_NOT_FOUND)
+        if not FunctionsStore.pingDegradation('https://orders-ivan.herokuapp.com/manage/health/'):
+            return JsonResponse({'message': 'Server Orders close'}, status=status.HTTP_404_NOT_FOUND)
 
-        elif (FunctionsStore.validate_uuid4(user_uid) and FunctionsStore.validate_uuid4(order_uid)) is False:
+        if (FunctionsStore.validate_uuid4(user_uid) and FunctionsStore.validate_uuid4(order_uid)) is False:
             return JsonResponse({'message': 'Is not a valid UUID'}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-        elif FunctionsStore.validUser(user_uid):
-            storeReq = requests.get('https://orders-ivan.herokuapp.com/api/v1/orders/{user_uid}/{order_uid}'.format(
-                user_uid=user_uid, order_uid=order_uid)).json()
-            if 'message' in storeReq:
-                return JsonResponse({'message': '{}'.format(storeReq["message"])}, status=status.HTTP_400_BAD_REQUEST)
+        if not FunctionsStore.validUser(user_uid):
+            return JsonResponse({'message': 'The user does not exist or No Content'}, status=status.HTTP_404_NOT_FOUND)
+
+        # ping to degradation of functionality services
+        pingWarranty = FunctionsStore.pingDegradation("https://warranty-ivan.herokuapp.com/manage/health/")
+        pingWarehouse = FunctionsStore.pingDegradation("https://warehouse-ivan.herokuapp.com/manage/health/")
+        storeReq = requests.get('https://orders-ivan.herokuapp.com/api/v1/orders/{user_uid}/{order_uid}'.format(
+            user_uid=user_uid, order_uid=order_uid)).json()
+        warrantyResp = warehouseResp = {}
+        if pingWarranty:
             warrantyResp = requests.get(
                 'https://warranty-ivan.herokuapp.com/api/v1/warranty/{}'.format(storeReq['itemUid'])).json()
+        if pingWarehouse:
             warehouseResp = requests.get(
                 'https://warehouse-ivan.herokuapp.com/api/v1/warehouse/{}'.format(storeReq['itemUid'])).json()
-            storeReq.update(warrantyResp, **warehouseResp)  # через дополнительные параметры конструктора типа
-            storeReq = FunctionsStore.filter_response(storeReq)
-            return JsonResponse(storeReq, status=status.HTTP_200_OK)
-        return JsonResponse({'message': 'The tutorial does not exist or No Content'}, status=status.HTTP_404_NOT_FOUND)
+        storeReq.update(warrantyResp, **warehouseResp)  # через дополнительные параметры конструктора типа
+        storeReq = FunctionsStore.filter_response(storeReq)
+        return JsonResponse(storeReq, status=status.HTTP_200_OK)
     except Exception as e:
         return JsonResponse({'message': '{}'.format(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -91,26 +104,27 @@ def purchase_order(request, user_uid):
         if not FunctionsStore.pingServices():
             return JsonResponse({'message': 'Server Orders/Warranty/Warehouse close'}, status=status.HTTP_404_NOT_FOUND)
 
-        elif FunctionsStore.validate_uuid4(user_uid) is False:
+        if FunctionsStore.validate_uuid4(user_uid) is False:
             return JsonResponse({'message': 'Is not a valid UUID'}, status=status.HTTP_406_NOT_ACCEPTABLE)
 
-        elif FunctionsStore.validUser(user_uid):
-            if len(request.data) <= 2 and ('model' and 'size') in request.data:
-                if FunctionsStore.regularExp(request.data) is False:
-                    return JsonResponse({'message': 'No valid model or size'}, status=status.HTTP_406_NOT_ACCEPTABLE)
-                orderResp = requests.post('https://orders-ivan.herokuapp.com/api/v1/orders/{}'
-                                          .format(user_uid), json=request.data)
-                if orderResp.status_code == 200:
-                    orderResp = orderResp.json()
-                    response = JsonResponse(1, status=status.HTTP_201_CREATED, safe=False)
-                    response['Location'] = 'https://orders-ivan.herokuapp.com/api/v1/orders/{user_uid}/purchase/' \
-                                           '{order_uid}'.format(user_uid=user_uid, order_uid=orderResp["orderUid"])
-                    return response
-                JsonResponse({'message': 'Item not available'}, status=status.HTTP_409_CONFLICT)
-            else:
-                return JsonResponse({'message': 'Incorrect JSON format or model, size'},
-                                    status=status.HTTP_400_BAD_REQUEST)
-        return JsonResponse({'message': 'The tutorial does not exist or No Content'}, status=status.HTTP_404_NOT_FOUND)
+        if not FunctionsStore.validUser(user_uid):
+            return JsonResponse({'message': 'The user does not exist or No Content'}, status=status.HTTP_404_NOT_FOUND)
+
+        if len(request.data) <= 2 and ('model' and 'size') in request.data:
+            if FunctionsStore.regularExp(request.data) is False:
+                return JsonResponse({'message': 'No valid model or size'}, status=status.HTTP_406_NOT_ACCEPTABLE)
+            orderResp = requests.post('https://orders-ivan.herokuapp.com/api/v1/orders/{}'
+                                      .format(user_uid), json=request.data)
+            if orderResp.status_code == 200:
+                orderResp = orderResp.json()
+                response = JsonResponse(1, status=status.HTTP_201_CREATED, safe=False)
+                response['Location'] = 'https://orders-ivan.herokuapp.com/api/v1/orders/{user_uid}/purchase/' \
+                                       '{order_uid}'.format(user_uid=user_uid, order_uid=orderResp["orderUid"])
+                return response
+            JsonResponse({'message': 'Item not available'}, status=status.HTTP_409_CONFLICT)
+        else:
+            return JsonResponse({'message': 'Incorrect JSON format or model, size'},
+                                status=status.HTTP_400_BAD_REQUEST)
     except Exception as e:
         return JsonResponse({'message': '{}'.format(e)}, status=status.HTTP_400_BAD_REQUEST)
 

@@ -45,19 +45,20 @@ class FunctionsOrders:
         except Exception as e:
             return JsonResponse({'message': '{}'.format(e)}, status=status.HTTP_400_BAD_REQUEST)
 
-    def regularExp(request, types):
+    def regularExp(self, types):
         """
         Validation of data from JSON(request) using a pattern from regular expressions
-        :param self: from function in JSON(request
+        :param self: from function in JSON(request)
+        :param types: types of check for regular expressions
         :return: True or False
         """
 
         model = '^[A-Z]+[a-z 0-9]+$'
         size = '^[A-Z]+$'
         reason = '^[A-Z][a-z 0-9]+$'
-        if types == 1 and (re.match(model, request.get("model")) and re.match(size, request.get("size"))) is not None:
+        if types == 1 and (re.match(model, self.get("model")) and re.match(size, self.get("size"))) is not None:
             return True
-        if types == 2 and re.match(reason, request.get("reason")) is not None:
+        if types == 2 and re.match(reason, self.get("reason")) is not None:
             return True
         return False
 
