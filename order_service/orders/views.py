@@ -48,10 +48,10 @@ def actions_orders(request, user_uid):
             warrantyResp = requests.post(
                 'https://warranty-ivan.herokuapp.com/api/v1/warranty/{}'.format(order_serializer.data["item_uid"]))
             warehouseResp = requests.post('https://warehouse-ivan.herokuapp.com/api/v1/warehouse/', json=parseDict)
-
+            # rolling back the operation
             if warrantyResp.status_code == 204 and warehouseResp.status_code == 200:
                 return JsonResponse({"orderUid": order_serializer.data["order_uid"]}, status=status.HTTP_200_OK)
-            return JsonResponse({"message": "Error on warranty or warehouse service"}, status=status.HTTP_200_OK)
+            return JsonResponse({"message": "Error in warranty or warehouse service"}, status=status.HTTP_404_NOT_FOUND)
 
         if request.method == 'DELETE':
             try:
