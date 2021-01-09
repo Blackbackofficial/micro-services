@@ -24,11 +24,13 @@ def actions_warranty(request, item_uid):
             if warranty_serializer.is_valid():
                 warranty_serializer.save()
                 return JsonResponse(1, status=status.HTTP_204_NO_CONTENT, safe=False)
+
         if request.method == 'GET':
             if FunctionsWarranty.valid_warranty(item_uid):
                 warranty = FunctionsWarranty.valid_warranty(item_uid)
                 filterRes = FunctionsWarranty.filter_response(warranty)
                 return JsonResponse(filterRes, status=status.HTTP_200_OK, safe=False)
+
         if request.method == 'DELETE':
             if FunctionsWarranty.valid_warranty(item_uid):
                 warrantyDelete = FunctionsWarranty.valid_warranty(item_uid)
