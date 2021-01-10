@@ -60,7 +60,8 @@ def actions_orders(request, user_uid):
 
         if request.method == 'DELETE':
             try:
-                itemUid = order = Orders.objects.get(order_uid=user_uid).item_uid
+                itemUid = order = Orders.objects.get(order_uid=user_uid)
+                itemUid = itemUid.item_uid
                 warrantySave = requests.get('https://warranty-ivan.herokuapp.com/api/v1/warranty/{}'.format(itemUid))
                 warrantyRes = requests.delete('https://warranty-ivan.herokuapp.com/api/v1/warranty/{}'.format(itemUid))
                 wareRes = requests.delete('https://warehouse-ivan.herokuapp.com/api/v1/warehouse/{}'.format(itemUid))
