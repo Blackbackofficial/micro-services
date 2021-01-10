@@ -63,7 +63,7 @@ def actions_orders(request, user_uid):
                 itemUid = order = Orders.objects.get(order_uid=user_uid).item_uid
                 warrantySave = requests.get('https://warranty-ivan.herokuapp.com/api/v1/warranty/{}'.format(itemUid))
                 warrantyRes = requests.delete('https://warranty-ivan.herokuapp.com/api/v1/warranty/{}'.format(itemUid))
-                wareRes = requests.delete('https://warehqwouse-ivan.herokuapp.com/api/v1/warehouse/{}'.format(itemUid))
+                wareRes = requests.delete('https://warehouse-ivan.herokuapp.com/api/v1/warehouse/{}'.format(itemUid))
                 if wareRes.status_code == 204 and warrantyRes.status_code == 204:
                     order.delete()
                     return JsonResponse(1, status=status.HTTP_204_NO_CONTENT, safe=False)
