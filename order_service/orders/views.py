@@ -32,7 +32,7 @@ def actions_orders(request, user_uid):
             return JsonResponse(filterReq, status=status.HTTP_200_OK, safe=False)
 
         if not FunctionsOrders.pingServices(1):
-            return JsonResponse({'message': 'Server Orders/Warranty/Warehouse close'}, status=status.HTTP_404_NOT_FOUND)
+            return JsonResponse({'message': 'Server Warranty/Warehouse close'}, status=status.HTTP_404_NOT_FOUND)
 
         if request.method == 'POST':
             parseDict = JSONParser().parse(request)
@@ -51,7 +51,12 @@ def actions_orders(request, user_uid):
             # rolling back the operation
             if warrantyResp.status_code == 204 and warehouseResp.status_code == 200:
                 return JsonResponse({"orderUid": order_serializer.data["order_uid"]}, status=status.HTTP_200_OK)
-            return JsonResponse({"message": "Error in warranty or warehouse service"}, status=status.HTTP_404_NOT_FOUND)
+            else:
+                initOrder = Orders.objects.get(order_uid=parseDict['orderUid'])
+                requests.delete('https://orders-ivan.herokuapp.com/api/v1/orders/{}'.format(parseDict['orderUid']))
+                requests.delete('https://warranty-ivan.herokuapp.com/api/v1/warranty/{}'.format(initOrder))
+                requests.delete('https://warehouse-ivan.herokuapp.com/api/v1/warehouse/{}'.format(initOrder))
+                return JsonResponse({'message': 'Rolling back operation'}, status=status.HTTP_409_CONFLICT)
 
         if request.method == 'DELETE':
             try:
