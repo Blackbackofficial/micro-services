@@ -15,11 +15,11 @@ class FunctionsWarranty:
         :return: reformed warranty
         """
 
-        self = WarrantySerializer(self).data
-        self['warrantyDate'] = self.pop('warranty_date')
-        self["itemUid"] = self.pop("item_uid")
-        del self['id'], self['comment']
-        return self
+        data = WarrantySerializer(self).data
+        data['warrantyDate'] = data.pop('warranty_date')
+        data["itemUid"] = data.pop("item_uid")
+        del data['id']
+        return data
 
     def valid_warranty(self):
         """
