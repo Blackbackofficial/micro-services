@@ -71,7 +71,7 @@ def actions_orders(request, user_uid):
                     warrantySave = warrantySave.json()
                     requests.post('https://warranty-ivan.herokuapp.com/api/v1/warranty/{}'
                                   .format(itemUid), json=warrantySave)
-                    return JsonResponse({'message': 'Warranty or Warehouse {} not found'.format(user_uid)},
+                    return JsonResponse({'message': 'Rolling back operation'.format(user_uid)},
                                         status=status.HTTP_404_NOT_FOUND)
             except Orders.DoesNotExist:
                 return JsonResponse({'message': 'Order {} not found'.format(user_uid)},
