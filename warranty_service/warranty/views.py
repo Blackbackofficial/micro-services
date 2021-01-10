@@ -24,7 +24,12 @@ def actions_warranty(request, item_uid):
 
     try:
         if request.method == 'POST':
-            warranty = dict(status='ON_WARRANTY', item_uid=item_uid, comment='None')
+            if not request.data:
+                warranty = dict(status='ON_WARRANTY', item_uid=item_uid, comment='None')
+            else:
+                data = request.data
+                warranty = dict(status=data['status'], item_uid=item_uid,
+                                comment=data['comment'], warrantyDate=data['warrantyDate'])
             warranty_serializer = WarrantySerializer(data=warranty)
             if warranty_serializer.is_valid():
                 warranty_serializer.save()

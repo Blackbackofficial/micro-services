@@ -60,17 +60,19 @@ def actions_orders(request, user_uid):
 
         if request.method == 'DELETE':
             try:
-                initOrder = order = Orders.objects.get(order_uid=user_uid)
-                initOrder = initOrder.item_uid
-                warehouseResp = requests.delete(
-                    'https://warehouse-ivan.herokuapp.com/api/v1/warehouse/{}'.format(initOrder))
-                warrantyResp = requests.delete(
-                    'https://warranty-ivan.herokuapp.com/api/v1/warranty/{}'.format(initOrder))
-                if warehouseResp.status_code and warrantyResp.status_code == 204:
+                itemUid = order = Orders.objects.get(order_uid=user_uid).item_uid
+                warrantySave = requests.get('https://warranty-ivan.herokuapp.com/api/v1/warranty/{}'.format(itemUid))
+                warrantyRes = requests.delete('https://warranty-ivan.herokuapp.com/api/v1/warranty/{}'.format(itemUid))
+                wareRes = requests.delete('https://warehqwouse-ivan.herokuapp.com/api/v1/warehouse/{}'.format(itemUid))
+                if wareRes.status_code == 204 and warrantyRes.status_code == 204:
                     order.delete()
                     return JsonResponse(1, status=status.HTTP_204_NO_CONTENT, safe=False)
-                return JsonResponse({'message': 'Warranty or Warehouse {} not found'.format(user_uid)},
-                                    status=status.HTTP_404_NOT_FOUND)
+                else:
+                    warrantySave = warrantySave.json()
+                    requests.post('https://warranty-ivan.herokuapp.com/api/v1/warranty/{}'
+                                  .format(itemUid), json=warrantySave)
+                    return JsonResponse({'message': 'Warranty or Warehouse {} not found'.format(user_uid)},
+                                        status=status.HTTP_404_NOT_FOUND)
             except Orders.DoesNotExist:
                 return JsonResponse({'message': 'Order {} not found'.format(user_uid)},
                                     status=status.HTTP_404_NOT_FOUND)
