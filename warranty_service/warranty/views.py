@@ -1,3 +1,6 @@
+import signal
+import pika
+import requests
 from circuitbreaker import circuit
 from .functions import FunctionsWarranty
 from .serializers import WarrantySerializer
@@ -7,6 +10,33 @@ from rest_framework.decorators import api_view
 
 FAILURES = 3
 TIMEOUT = 6
+
+
+def startRabbit():
+    parameters = pika.URLParameters(
+        'amqps://waxtnnui:GqR1g_QZtwn9BuHIo0WhrWZ3pcxDpOzi@crow.rmq.cloudamqp.com/waxtnnui')
+    connection = pika.BlockingConnection(parameters)
+    channel = connection.channel()
+    channel.queue_declare(queue='warranty')
+
+    def callback(ch, method, properties, receive):
+        receive = receive.decode()
+        requests.post('https://warranty-ivan.herokuapp.com/api/v1/warranty/{}'.format(receive))
+
+    channel.basic_consume(queue='warranty', on_message_callback=callback, auto_ack=True)
+    channel.start_consuming()
+
+
+def signal_handler(signum, frame):
+    raise Exception("Timed out!")
+
+
+signal.signal(signal.SIGALRM, signal_handler)
+signal.alarm(10)  # Ten seconds
+try:
+    startRabbit()
+except Exception as e:
+    print("Timed out!")
 
 
 # API

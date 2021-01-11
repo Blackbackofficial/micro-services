@@ -49,6 +49,7 @@ pythonping==1.0.15
 pytz==2020.1
 PyYAML==5.3.1
 requests==2.24.0
+schedule==0.6.0
 simplejson==3.17.2
 six==1.15.0
 smmap==3.0.4
