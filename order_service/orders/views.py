@@ -7,6 +7,7 @@ from django.http import JsonResponse
 from rest_framework import status
 from rest_framework.decorators import api_view
 import requests
+import pika
 
 FAILURES = 3
 TIMEOUT = 6
@@ -47,10 +48,19 @@ def actions_orders(request, user_uid):
                 {'orderUid': order_serializer.data["order_uid"], 'orderItemUid': order_serializer.data["item_uid"]})
             warrantyResp = requests.post(
                 'https://warranty-ivan.herokuapp.com/api/v1/warranty/{}'.format(order_serializer.data["item_uid"]))
+            # RabbitMQ
+            if not warrantyResp.status_code == 204:
+                connection = pika.BlockingConnection(pika.URLParameters(
+                    'amqps://waxtnnui:GqR1g_QZtwn9BuHIo0WhrWZ3pcxDpOzi@crow.rmq.cloudamqp.com/waxtnnui'))
+                channel = connection.channel()
+                channel.queue_declare(queue='warranty')  # Put in the queue
+                channel.basic_publish(exchange='', routing_key='warranty', body=order_serializer.data["item_uid"])
+                connection.close()
+
             warehouseResp = requests.post('https://warehouse-ivan.herokuapp.com/api/v1/warehouse/', json=parseDict)
-            # rolling back the operation
-            if warrantyResp.status_code == 204 and warehouseResp.status_code == 200:
+            if warehouseResp.status_code == 200:
                 return JsonResponse({"orderUid": order_serializer.data["order_uid"]}, status=status.HTTP_200_OK)
+            # rolling back the operation
             else:
                 initOrder = Orders.objects.get(order_uid=parseDict['orderUid'])
                 requests.delete('https://orders-ivan.herokuapp.com/api/v1/orders/{}'.format(parseDict['orderUid']))
