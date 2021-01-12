@@ -32,7 +32,7 @@ def signal_handler(signum, frame):
 
 
 signal.signal(signal.SIGALRM, signal_handler)
-signal.alarm(30)  # Ten seconds
+signal.alarm(10)  # Ten seconds
 try:
     startRabbit()
 except Exception as e:
